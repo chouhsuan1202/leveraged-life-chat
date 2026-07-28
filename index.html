@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>槓桿人生 AI 助手</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Marked Markdown Parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent-gold: #d97706;
+      --accent-green: #059669;
+      --accent-red: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --shadow-light: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-secondary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .brand-title h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    /* Main Layout Container */
+    .container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--bg-main);
+      padding: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      width: fit-content;
+      box-shadow: var(--shadow-light);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-main);
+      background: var(--bg-secondary);
+    }
+
+    /* Tab Content Areas */
+    .tab-content {
+      display: none;
+      flex: 1;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* CHAT TAB */
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 1.25rem;
+      height: 640px;
+    }
+
+    @media (max-width: 900px) {
+      .chat-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    .chat-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .chat-header {
+      padding: 0.85rem 1.25rem;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: #fafafa;
+    }
+
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 85%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+    }
+
+    .message.assistant .avatar {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    .message.user .avatar {
+      background: linear-gradient(135deg, var(--accent-gold), #b45309);
+      color: white;
+    }
+
+    .bubble {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 0.85rem 1.1rem;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .bubble h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .bubble ul, .bubble ol {
+      padding-left: 1.35rem;
+      margin-top: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .bubble li {
+      margin-bottom: 0.35rem;
+      line-height: 1.55;
+    }
+
+    .bubble strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .bubble p {
+      margin-bottom: 0.4rem;
+    }
+
+    .bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message.user .bubble {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .chat-input-area {
+      padding: 0.85rem;
+      background: var(--bg-main);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input-area textarea {
+      flex: 1;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+      height: 44px;
+    }
+
+    .chat-input-area textarea:focus {
+      border-color: var(--primary);
+      background: var(--bg-main);
+    }
+
+    .btn-send {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      transition: all 0.2s;
+    }
+
+    .btn-send:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Sidebar Prompts */
+    .quick-sidebar {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .quick-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .prompt-chip {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      color: var(--text-main);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      line-height: 1.35;
+    }
+
+    .prompt-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* CALCULATOR TAB */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .calc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calc-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .calc-header {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    .input-with-unit {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-unit input, .input-with-unit select {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      padding-right: 2.75rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .input-with-unit input:focus, .input-with-unit select:focus {
+      border-color: var(--primary);
+      background: var(--bg-main);
+    }
+
+    .input-unit {
+      position: absolute;
+      right: 0.85rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metric-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .val-primary { color: var(--primary); }
+    .val-gold { color: var(--accent-gold); }
+    .val-green { color: var(--accent-green); }
+    .val-red { color: var(--accent-red); }
+
+    .status-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .badge-safe { background: #d1fae5; color: var(--accent-green); border: 1px solid #a7f3d0; }
+    .badge-warning { background: #fef3c7; color: var(--accent-gold); border: 1px solid #fde68a; }
+    .badge-danger { background: #fee2e2; color: var(--accent-red); border: 1px solid #fca5a5; }
+
+    /* ASSET PORTFOLIO TAB */
+    .asset-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+    }
+
+    .asset-table th, .asset-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.65rem;
+      text-align: left;
+    }
+
+    .asset-table th {
+      background: var(--bg-secondary);
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .asset-table input {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .asset-table input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-row-action {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+    }
+
+    .btn-row-action:hover {
+      color: var(--accent-red);
+    }
+
+    .btn-add-row {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px dashed var(--primary);
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-add-row:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* COMBINED PPT & KNOWLEDGE TAB */
+    .combined-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .slides-preview-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .slides-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-fullscreen {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-fullscreen:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .iframe-slides {
+      width: 100%;
+      height: 520px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .kb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .kb-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kb-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.85rem;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .kb-card ul {
+      list-style-type: none;
+    }
+
+    .kb-card li {
+      position: relative;
+      padding-left: 1.2rem;
+      margin-bottom: 0.65rem;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .kb-card li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .kb-card strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-title">
+        <h1>槓桿人生 AI</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container -->
+  <div class="container">
+    
+    <!-- 4 Clean Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('chat')">
+        <i class="fa-solid fa-comments"></i> 理財對話
+      </button>
+      <button class="tab-btn" onclick="switchTab('calc')">
+        <i class="fa-solid fa-calculator"></i> 槓桿計算
+      </button>
+      <button class="tab-btn" onclick="switchTab('assets')">
+        <i class="fa-solid fa-user-shield"></i> 私人資產細節
+      </button>
+      <button class="tab-btn" onclick="switchTab('slides')">
+        <i class="fa-solid fa-file-powerpoint"></i> 精華簡報與導覽
+      </button>
+    </div>
+
+    <!-- TAB 1: CHAT -->
+    <div id="tab-chat" class="tab-content active">
+      <div class="chat-layout">
+        <!-- Main Chat Box -->
+        <div class="chat-card">
+          <div class="chat-header">
+            <span><i class="fa-solid fa-robot" style="color: var(--primary);"></i> 理財 AI 導師</span>
+            <span style="font-size: 0.78rem; color: var(--accent-green);"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> 在線</span>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="message assistant">
+              <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+              <div class="bubble">
+                <p>你好！我是 <strong>槓桿人生 AI 助手</strong>。</p>
+                <p>我已深入學習全部影音與文章精華。</p>
+                <p>你可以問我關於 <strong>股票質押、信貸談判、維持率風控</strong>，或點選上方 <strong>私人資產細節</strong> 記錄你專屬的持股與借貸部位！</p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <textarea id="user-input" placeholder="請輸入問題或資產狀況... (按 Enter 發送)" onkeydown="handleKeyDown(event)"></textarea>
+            <button class="btn-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+
+        <!-- Sidebar Prompts -->
+        <div class="quick-sidebar">
+          <div class="quick-title">
+            <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> 熱門問題
+          </div>
+          <button class="prompt-chip" onclick="askQuickPrompt('信貸 vs 股票質押，未來 5 年有買房計畫該怎麼選？')">
+            🏦 信貸 vs 質押：買房選哪個？
+          </button>
+          <button class="prompt-chip" onclick="askQuickPrompt('股票質押安全維持率是多少？如何計算？')">
+            🛡️ 股票質押安全維持率計算
+          </button>
+          <button class="prompt-chip" onclick="askQuickPrompt('為什麼定期定額的風險反而比生命週期投資法更大？')">
+            📈 定期定額 vs 生命週期
+          </button>
+          <button class="prompt-chip" onclick="askQuickPrompt('大盤回檔 20% 時，正二 (00631L/LQQ) 加碼 SOP 是什麼？')">
+            📊 正二 ETF 崩盤加碼 SOP
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CALCULATOR -->
+    <div id="tab-calc" class="tab-content">
+      <div class="calc-grid">
+        <!-- Input Form -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <span><i class="fa-solid fa-sliders" style="color: var(--primary);"></i> 資產試算</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">🔒 瀏覽器端私有</span>
+          </div>
+          <div class="form-group">
+            <label>股票資產總市值 (NTD / EUR)</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-stock-value" value="1000000" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>股票質押借款金額</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-collateral-loan" value="300000" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>個人信用貸款總額</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-credit-loan" value="200000" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>備用金與現金</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-cash-reserve" value="100000" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Gauges -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <span><i class="fa-solid fa-chart-pie" style="color: var(--accent-gold);"></i> 槓桿風控診斷</span>
+          </div>
+
+          <div class="metric-box">
+            <div>
+              <div class="metric-label">淨資產 (Net Worth)</div>
+              <div class="metric-value val-green" id="res-net-worth">NT$ 600,000</div>
+            </div>
+            <i class="fa-solid fa-wallet fa-xl" style="color: rgba(5, 150, 105, 0.25);"></i>
+          </div>
+
+          <div class="metric-box">
+            <div>
+              <div class="metric-label">總槓桿曝險倍率</div>
+              <div class="metric-value val-primary" id="res-exposure-ratio">1.25 x</div>
+            </div>
+            <span class="status-badge badge-safe" id="badge-exposure">健康區</span>
+          </div>
+
+          <div class="metric-box">
+            <div>
+              <div class="metric-label">質押維持率</div>
+              <div class="metric-value val-gold" id="res-margin-ratio">333.3 %</div>
+            </div>
+            <span class="status-badge badge-safe" id="badge-margin">極度安全 (>200%)</span>
+          </div>
+
+          <div class="metric-box">
+            <div>
+              <div class="metric-label">追繳可承受大盤跌幅</div>
+              <div class="metric-value val-primary" id="res-max-drop">-61.0 %</div>
+            </div>
+            <i class="fa-solid fa-shield-halved fa-xl" style="color: rgba(37, 99, 235, 0.25);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ASSETS DETAIL (PRIVATE LOCAL TAB) -->
+    <div id="tab-assets" class="tab-content">
+      <div class="calc-card">
+        <div class="calc-header">
+          <span><i class="fa-solid fa-user-lock" style="color: var(--primary);"></i> 個人私人資產明細管理</span>
+          <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 100% 僅存於你本機瀏覽器 (不傳送至網路)</span>
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
+          在下方編輯你的持股標的、質押機構與信貸明細。按下「儲存資產資料」後，資料將僅保存在你個人電腦中，其他人開啟網頁無法存取。
+        </p>
+
+        <!-- Holdings Table -->
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-main);">📈 股票與持股明細</h4>
+        <table class="asset-table" id="table-holdings">
+          <thead>
+            <tr>
+              <th>股票標的/代號</th>
+              <th>持有股數 / 市值 (元)</th>
+              <th>質押成數 / 借款 (元)</th>
+              <th>備註說明</th>
+              <th style="width:40px;"></th>
+            </tr>
+          </thead>
+          <tbody id="body-holdings">
+            <tr>
+              <td><input type="text" value="0050 元大台灣50" class="h-name"></td>
+              <td><input type="number" value="600000" class="h-val"></td>
+              <td><input type="number" value="200000" class="h-loan"></td>
+              <td><input type="text" value="核心市值型庫存" class="h-note"></td>
+              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="00631L 正二" class="h-name"></td>
+              <td><input type="number" value="400000" class="h-val"></td>
+              <td><input type="number" value="100000" class="h-loan"></td>
+              <td><input type="text" value="槓桿增益部位" class="h-note"></td>
+              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-row" onclick="addHoldingRow()"><i class="fa-solid fa-plus"></i> 新增持股項目</button>
+
+        <!-- Action Bar -->
+        <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+          <button class="btn-send" style="width:auto; padding:0.75rem 1.5rem; font-size:0.9rem; font-weight:700;" onclick="savePrivateAssetDetails()">
+            <i class="fa-solid fa-floppy-disk"></i> 儲存資產資料 (僅保存在本機)
+          </button>
+          <button class="prompt-chip" style="color:var(--accent-red);" onclick="clearPrivateAssetDetails()">
+            <i class="fa-solid fa-trash-can"></i> 清空個人紀錄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: COMBINED PPT & KNOWLEDGE -->
+    <div id="tab-slides" class="tab-content">
+      <div class="combined-layout">
+        <!-- Interactive Slides -->
+        <div class="slides-preview-card">
+          <div class="slides-toolbar">
+            <div>
+              <h2 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);"><i class="fa-solid fa-file-powerpoint" style="color: var(--accent-gold);"></i> 槓桿人生 8 大主題精華簡報 (PPT)</h2>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.15rem;">包含富人花錢三順位、買借死金融思維、借貸選擇矩陣與 200%+ 質押安全防禦。</p>
+            </div>
+            <button class="btn-fullscreen" onclick="openFullSlides()">
+              <i class="fa-solid fa-up-right-from-square"></i> 全螢幕播放
+            </button>
+          </div>
+          <iframe src="slides.html" class="iframe-slides" id="slides-iframe"></iframe>
+        </div>
+
+        <!-- Knowledge Cards below PPT -->
+        <div class="kb-grid">
+          <div class="kb-card">
+            <h3><i class="fa-solid fa-brain"></i> 01. 核心觀念與淨資產</h3>
+            <ul>
+              <li><strong>看淨資產而非流水帳</strong>：關注總資產減總負債擴張速度。</li>
+              <li><strong>人力資本折現</strong>：把未來薪資提早參與複利成長。</li>
+              <li><strong>生命週期投資</strong>：本金小時適度開槓，資產大時調降曝險。</li>
+              <li><strong>市值型優先</strong>：0050/QQQ 才是滾雪球主力，拒絕高股息左手換右手。</li>
+            </ul>
+          </div>
+          <div class="kb-card">
+            <h3><i class="fa-solid fa-building-columns"></i> 02. 質押與信貸實操</h3>
+            <ul>
+              <li><strong>質押免還本金</strong>：成數控在 30% 至 40%，每年只繳利息長線展延。</li>
+              <li><strong>信貸競價技巧</strong>：保持高信用分，拿 A 銀行條件向 B 銀行談判。</li>
+              <li><strong>買房扣額提醒</strong>：信貸會扣減房貸額度，質押影響較小。</li>
+              <li><strong>維持率安全區</strong>：保持在 200% 至 300%+，耐受大盤 40%+ 崩盤。</li>
+            </ul>
+          </div>
+          <div class="kb-card">
+            <h3><i class="fa-solid fa-chart-line"></i> 03. 資產配置與正二</h3>
+            <ul>
+              <li><strong>正二 (00631L/LQQ)</strong>：長抱多頭市場超額複利，建構 1.2x 至 1.5x 曝險。</li>
+              <li><strong>動態曝險控管</strong>：高檔過熱調降曝險，保留預備金。</li>
+              <li><strong>崩盤加碼 SOP</strong>：回檔 15% 至 20% 分批動用質押/信貸加碼。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const localAnswers = {
+      "信貸 vs 質押": `### 🏦 信貸 vs 股票質押選擇策略\n\n1. **信貸 (Credit Loan)**：\n   - **優點**：不需股票庫存即可申請。\n   - **注意**：依月本息攤還，且**會直接扣減你未來買房的房貸額度**！5 年內有買房需求者請謹慎。\n\n2. **股票質押 (Stock Loan)**：\n   - **優點**：只繳利息不還本金，不佔用房貸額度。\n   - **關鍵**：維持率必須保持在 **200% 至 300% 以上**（質押成數控在 30% 至 40%）。`,
+      "維持率": `### 🛡️ 股票質押維持率與風險防禦\n\n- **公式**：\`維持率 = (質押股票總市值 / 借款金額) × 100%\`\n- **法定追繳線**：130%\n- **安全線**：**200% 至 300%+**\n\n**耐受大盤跌幅計算**：當維持率保持在 300% 時，大盤需跌超過 **56.6%** 才會觸及 130% 追繳線！`,
+      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 配置\n\n- **核心優勢**：在長線多頭市場中，正二的複利效應會超越 2 倍。\n- **建議配置**：將正二搭配原型市值型 ETF (0050/SXR8)，建構 **1.2x 至 1.5x 等效總曝險**。`,
+      "崩盤": `### 🚨 大盤崩盤與回檔加碼 SOP\n\n1. **絕不停損**：核心市值型 ETF 絕不在恐慌時出清。\n2. **分批加碼**：當大盤回檔 15% 至 20% 時，開啟預留質押/信貸額度分批加碼正二。\n3. **站回均線**：重新站回 60MA 季線時，確認趨勢回歸。`
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.currentTarget.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function askQuickPrompt(text) {
+      document.getElementById('user-input').value = text;
+      sendMessage();
+    }
+
+    function openFullSlides() {
+      window.open('slides.html', '_blank');
+    }
+
+    async function sendMessage() {
+      const inputEl = document.getElementById('user-input');
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      appendMessage('user', text);
+      inputEl.value = '';
+
+      let reply = "根據投資邏輯：\n\n淨資產增長與風控安全是核心。質押成數保持在 30% 至 40%，維持率保持 200% 以上，建構 1.2x 至 1.5x 等效曝險。";
+      for (let key in localAnswers) {
+        if (text.includes(key)) {
+          reply = localAnswers[key];
+          break;
+        }
+      }
+      setTimeout(() => {
+        appendMessage('assistant', reply);
+      }, 300);
+    }
+
+    function renderMarkdownText(text) {
+      if (window.marked && typeof window.marked.parse === 'function') {
+        return window.marked.parse(text);
+      }
+      return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    }
+
+    function appendMessage(role, text) {
+      const chatMsgs = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${role}`;
+      
+      const icon = role === 'assistant' ? 'fa-robot' : 'fa-user';
+      const formattedText = role === 'assistant' ? renderMarkdownText(text) : text;
+
+      msgDiv.innerHTML = `
+        <div class="avatar"><i class="fa-solid ${icon}"></i></div>
+        <div class="bubble">${formattedText}</div>
+      `;
+      
+      chatMsgs.appendChild(msgDiv);
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    // Calculator Logic & Private Local Storage
+    function calculateLeverage() {
+      const stock = parseFloat(document.getElementById('inp-stock-value').value) || 0;
+      const colLoan = parseFloat(document.getElementById('inp-collateral-loan').value) || 0;
+      const credLoan = parseFloat(document.getElementById('inp-credit-loan').value) || 0;
+      const cash = parseFloat(document.getElementById('inp-cash-reserve').value) || 0;
+
+      const totalLiabilities = colLoan + credLoan;
+      const netWorth = stock + cash - totalLiabilities;
+      const exposureRatio = netWorth > 0 ? (stock / netWorth).toFixed(2) : 0;
+      
+      const marginRatio = colLoan > 0 ? ((stock / colLoan) * 100).toFixed(1) : '∞';
+      
+      let maxDrop = 'N/A';
+      if (colLoan > 0) {
+        const targetStock = colLoan * 1.3;
+        const dropPct = ((stock - targetStock) / stock * 100).toFixed(1);
+        maxDrop = `-${dropPct} %`;
+      }
+
+      document.getElementById('res-net-worth').innerText = `NT$ ${netWorth.toLocaleString()}`;
+      document.getElementById('res-exposure-ratio').innerText = `${exposureRatio} x`;
+      document.getElementById('res-margin-ratio').innerText = `${marginRatio} %`;
+      document.getElementById('res-max-drop').innerText = maxDrop;
+
+      const marginBadge = document.getElementById('badge-margin');
+      if (colLoan === 0) {
+        marginBadge.className = 'status-badge badge-safe';
+        marginBadge.innerText = '無質押借款';
+      } else if (parseFloat(marginRatio) >= 200) {
+        marginBadge.className = 'status-badge badge-safe';
+        marginBadge.innerText = '極度安全 (>200%)';
+      } else if (parseFloat(marginRatio) >= 150) {
+        marginBadge.className = 'status-badge badge-warning';
+        marginBadge.innerText = '警戒區域 (150%-200%)';
+      } else {
+        marginBadge.className = 'status-badge badge-danger';
+        marginBadge.innerText = '危險追繳邊緣 (<150%)';
+      }
+    }
+
+    // Private Asset Table Operations
+    function addHoldingRow() {
+      const tbody = document.getElementById('body-holdings');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" placeholder="股票標的" class="h-name"></td>
+        <td><input type="number" placeholder="市值" class="h-val"></td>
+        <td><input type="number" placeholder="借款" class="h-loan"></td>
+        <td><input type="text" placeholder="說明" class="h-note"></td>
+        <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+      btn.closest('tr').remove();
+    }
+
+    function savePrivateAssetDetails() {
+      const rows = document.querySelectorAll('#body-holdings tr');
+      const holdings = [];
+      let totalStock = 0;
+      let totalLoan = 0;
+
+      rows.forEach(tr => {
+        const name = tr.querySelector('.h-name').value;
+        const val = parseFloat(tr.querySelector('.h-val').value) || 0;
+        const loan = parseFloat(tr.querySelector('.h-loan').value) || 0;
+        const note = tr.querySelector('.h-note').value;
+        if (name || val > 0) {
+          holdings.push({ name, val, loan, note });
+          totalStock += val;
+          totalLoan += loan;
+        }
+      });
+
+      localStorage.setItem('private_assets_list', JSON.stringify(holdings));
+      
+      // Auto Sync to Calculator
+      if (totalStock > 0) document.getElementById('inp-stock-value').value = totalStock;
+      if (totalLoan > 0) document.getElementById('inp-collateral-loan').value = totalLoan;
+      calculateLeverage();
+
+      alert('✅ 已安全儲存私人資產資料至本機瀏覽器！');
+    }
+
+    function clearPrivateAssetDetails() {
+      if (confirm('確定要清空本機的所有私人資產細節嗎？')) {
+        localStorage.removeItem('private_assets_list');
+        document.getElementById('body-holdings').innerHTML = '';
+        alert('已清空本機資料。');
+      }
+    }
+
+    function loadPrivateAssetDetails() {
+      const saved = localStorage.getItem('private_assets_list');
+      if (saved) {
+        try {
+          const holdings = JSON.parse(saved);
+          const tbody = document.getElementById('body-holdings');
+          if (holdings.length > 0) {
+            tbody.innerHTML = '';
+            holdings.forEach(h => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><input type="text" value="${h.name || ''}" class="h-name"></td>
+                <td><input type="number" value="${h.val || 0}" class="h-val"></td>
+                <td><input type="number" value="${h.loan || 0}" class="h-loan"></td>
+                <td><input type="text" value="${h.note || ''}" class="h-note"></td>
+                <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        } catch(e) {}
+      }
+    }
+
+    window.onload = () => {
+      loadPrivateAssetDetails();
+      calculateLeverage();
+    };
+  </script>
+</body>
+</html>

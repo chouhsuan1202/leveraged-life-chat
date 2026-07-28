@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>槓桿人生 Ivan 全系列精華簡報 (8大核心教案)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --accent-gold: #d97706;
+      --accent-green: #059669;
+      --accent-red: #dc2626;
+      --border-color: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* Presentation Deck Container */
+    .deck-container {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .slide-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 980px;
+      min-height: 580px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+
+    .slide-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      line-height: 1.25;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .point-box {
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      transition: transform 0.2s;
+    }
+
+    .point-box:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+
+    .point-icon {
+      font-size: 1.35rem;
+      color: var(--primary);
+      margin-bottom: 0.65rem;
+    }
+
+    .point-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .point-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* Comparison Table Style */
+    .slide-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .slide-table th, .slide-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    .slide-table th {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Fixed Navigation Controls */
+    .controls {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 0.75rem;
+      z-index: 100;
+    }
+
+    .btn-nav {
+      width: 44px;
+      height: 44px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Cover Slide Specifics */
+    .cover-card {
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    }
+
+    .cover-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.85rem;
+    }
+
+    .cover-subtitle {
+      font-size: 1.2rem;
+      color: var(--accent-gold);
+      font-weight: 600;
+      margin-bottom: 1.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container" id="deck">
+
+    <!-- SLIDE 1: Cover -->
+    <div class="slide" id="slide-1">
+      <div class="slide-card cover-card">
+        <div class="slide-badge"><i class="fa-solid fa-graduation-cap"></i> YouTube & Podcast 98 集全精華教案</div>
+        <h1 class="cover-title">槓桿人生 Ivan 核心理財簡報</h1>
+        <p class="cover-subtitle">富人花錢三順位 • 買借死金融思維 • 200%+ 質押安全防禦</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">請使用 <kbd>↓</kbd> 方向鍵或下方按鈕切換簡報頁面</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: 富人思維篇 (EP25/27/30 精華) -->
+    <div class="slide" id="slide-2">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-crown"></i> 01. 富人思維與花錢三順位</div>
+          <h2 class="slide-title">買、借、死 (Buy, Borrow, Die) 金融邏輯</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-1"></i></div>
+            <div class="point-title">順位一：買入生錢資產</div>
+            <div class="point-desc">將本金投入市值型 ETF (0050/SXR8/QQQ) 或高品質房產，讓資產享受長線資本增值。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-2"></i></div>
+            <div class="point-title">順位二：利用質押借錢</div>
+            <div class="point-desc">不賣掉下金蛋的資產，而是透過低利質押借出現金。免去資本利得稅與賣股手續費。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-3"></i></div>
+            <div class="point-title">順位三：用借來的錢消費</div>
+            <div class="point-desc">用質押借出的低利資金買車、支付生活費或二次再投資，資產規模持續變大，越借越有錢。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 2 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: 觀念篇 (EP11/16/38/39 精華) -->
+    <div class="slide" id="slide-3">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-hourglass-half"></i> 02. 人力資本與生命週期投資法</div>
+          <h2 class="slide-title">本金少更該合理開槓桿</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-user-gear"></i></div>
+            <div class="point-title">未來人力資本折現</div>
+            <div class="point-desc">年輕最大的優勢是未來數十年的薪資流。合理槓桿是把「未來薪資」提前借到「現在」投入複利。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <div class="point-title">時間平滑化曝險</div>
+            <div class="point-desc">定期定額後期本金過大，單次崩盤損失慘重。生命週期投資法主張初期高曝險 (1.5x~2x)，資產變大後漸進調降。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-xmark"></i></div>
+            <div class="point-title">拒絕高股息假安全感</div>
+            <div class="point-desc">高股息配息是左手換右手，還要扣稅。資產翻倍必須以市值型 ETF 為唯一核心滾雪球。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 3 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: 工具矩陣 (EP10/14/29/33 精華) -->
+    <div class="slide" id="slide-4">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-building-columns"></i> 03. 借貸工具大決策矩陣</div>
+          <h2 class="slide-title">信貸 vs 質押 vs 理財型房貸</h2>
+        </div>
+        <table class="slide-table">
+          <thead>
+            <tr>
+              <th>維度</th>
+              <th>個人信用貸款</th>
+              <th>股票質押貸款</th>
+              <th>理財型/一般房貸 (EP33)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>資金門檻</strong></td>
+              <td>無資產門檻 (看工作收入)</td>
+              <td>須現有股票庫存</td>
+              <td>須現有房產增貸/理財型</td>
+            </tr>
+            <tr>
+              <td><strong>還款壓力</strong></td>
+              <td>按月本息攤還 (7年期)</td>
+              <td>只繳利息，本金續約展延</td>
+              <td>隨借隨還或長年期攤還</td>
+            </tr>
+            <tr>
+              <td><strong>買房額度扣減</strong></td>
+              <td><strong>嚴重扣減房貸額度 (DBR22倍)</strong></td>
+              <td>影響極小，可隨時解質</td>
+              <td>已是房貸系統內部調度</td>
+            </tr>
+            <tr>
+              <td><strong>斷頭風險</strong></td>
+              <td>無維持率追繳風險</td>
+              <td>維持率低於 130% 需追繳</td>
+              <td>無質押斷頭維持率壓力</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 4 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: 質押實操 (EP9/13/25/35 精華) -->
+    <div class="slide" id="slide-5">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-coins"></i> 04. 股票質押完全實操指南</div>
+          <h2 class="slide-title">30%~40% 成數與續約展延 SOP</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-percent"></i></div>
+            <div class="point-title">控管成數於 30%~40%</div>
+            <div class="point-desc">券商最高雖可借 60%，但嚴禁借滿！質押成數保持在 30%~40%，維持率可輕鬆維持在 250%~300% 以上。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="point-title">一年展延續約</div>
+            <div class="point-desc">質押期限通常為 1 年，到期付清利息即可開展新合約。若股票上漲，還能透過「增額質押」借出更多資金。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+            <div class="point-title">股息付利息零負擔</div>
+            <div class="point-desc">0050 或 QQQ 的長線配息與上漲利差足以覆蓋 2.x% 的質押利息，實現完全無痛現金流。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 5 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: 風控護城河 (EP22/29/35/55 精華) -->
+    <div class="slide" id="slide-6">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-shield-halved"></i> 05. 4 大防禦機制與維持率公式</div>
+          <h2 class="slide-title">耐受大盤崩盤 50%+ 的不敗算式</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-calculator"></i></div>
+            <div class="point-title">維持率算式</div>
+            <div class="point-desc"><code>維持率 = (股票總市值 / 借款總額) × 100%</code><br>當維持率 = 300% 時，大盤需跌超過 <strong>56.6%</strong> 才會碰觸 130% 追繳線。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-vault"></i></div>
+            <div class="point-title">流動性水庫 (EP29)</div>
+            <div class="point-desc">壓垮人的不是負債，而是手邊沒現金！保留 6-12 個月緊急預備金或未質押股票作為安全墊。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-user-shield"></i></div>
+            <div class="point-title">4 大防禦 SOP</div>
+            <div class="point-desc">1. 低質押成數 2. 留存流動預備金 3. 房貸/信貸本息負擔比 &lt; 30% 4. 股災絕不停損核心部位。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 6 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: 正二與曝險 (EP8/12/18/45 精華) -->
+    <div class="slide" id="slide-7">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-rocket"></i> 06. 正二 (00631L/LQQ) 1.2x~1.5x 配置</div>
+          <h2 class="slide-title">波幅耗損控管與動態加碼 SOP</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="point-title">1.2x ~ 1.5x 等效曝險</div>
+            <div class="point-desc">正二 (00631L/LQQ) 能在長線多頭創造複利。搭配 0050 組成 1.2x~1.5x 總曝險，兼具攻守。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+            <div class="point-title">大盤崩盤 20% 加碼</div>
+            <div class="point-desc">當大盤回檔 15%~20% 時，開啟預留質押/信貸分批加碼正二；站回 60MA 季線確認趨勢回升。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-gauge-high"></i></div>
+            <div class="point-title">動態調降曝險 (EP55)</div>
+            <div class="point-desc">當大盤創歷史高檔且過熱時，將總曝險適度調降至 1.0x~1.2x，落袋部分資金作為崩盤子彈。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 7 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: 實踐三階段 (EP31 精華) -->
+    <div class="slide" id="slide-8">
+      <div class="slide-card">
+        <div>
+          <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> 07. 三階段退休落地策略</div>
+          <h2 class="slide-title">從資產累積到終身現金流實務</h2>
+        </div>
+        <div class="slide-content">
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-seedling"></i></div>
+            <div class="point-title">第一階段：累積期 (20-35歲)</div>
+            <div class="point-desc">利用低利信貸與正二拉高曝險至 1.5x~2.0x，快速累積第一桶金與股票在庫庫存。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-tree"></i></div>
+            <div class="point-title">第二階段：擴張期 (35-50歲)</div>
+            <div class="point-desc">引入股票質押或理財型房貸，將曝險收斂至 1.2x~1.4x，兼顧家庭現金流與極高維持率。</div>
+          </div>
+          <div class="point-box">
+            <div class="point-icon"><i class="fa-solid fa-mountain-sun"></i></div>
+            <div class="point-title">第三階段：退休期 (50歲+)</div>
+            <div class="point-desc">曝險降至 1.0x，靠股票質押小額取現支付生活費。資產傳承無資本利得稅負擔。</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>槓桿人生 Ivan 影音全精華教案</span>
+          <span>Slide 8 / 8</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Floating Nav Controls -->
+  <div class="controls">
+    <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-up"></i></button>
+    <button class="btn-nav" onclick="nextSlide()"><i class="fa-solid fa-chevron-down"></i></button>
+  </div>
+
+  <script>
+    let currentIdx = 1;
+    const totalSlides = 8;
+
+    function scrollToSlide(idx) {
+      if (idx < 1) idx = 1;
+      if (idx > totalSlides) idx = totalSlides;
+      currentIdx = idx;
+      document.getElementById(`slide-${idx}`).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function nextSlide() { scrollToSlide(currentIdx + 1); }
+    function prevSlide() { scrollToSlide(currentIdx - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>
