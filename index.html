@@ -998,6 +998,7 @@
 
   <script type="module">
     import { calculateLeverage, parseInput } from './js/calculator.js';
+    import { processQuery } from './js/assistant.js';
 
     // Strict HTML Sanitization helper
     function escapeHtml(str) {
@@ -1009,13 +1010,6 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-
-    const localAnswers = {
-      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP14 (信貸談判與 DBR 22 規範) / 金融機構房貸授信實務指南 (description_only)\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
-      "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n📌 **引用出處**：Podcast EP13 (含 500% 官方勘誤) / 證交所業務借貸規定 (description_only)\n\n- **精準計算公式**：\`維持率 = (實際設質擔保品股票市值 / 質押借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。若當前維持率已低於 130%，跌幅將顯示 0.0%（已觸及追繳）。`,
-      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n📌 **引用出處**：Podcast EP31 / 證交所槓桿型 ETF 警示說明 (description_only)\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
-      "加碼": `### 🚨 大盤回檔加碼風控前提\n\n📌 **引用出處**：Podcast EP35 / EP38 回檔加碼 SOP (description_only)\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
-    };
 
     window.switchTab = function(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1049,22 +1043,10 @@
       appendMessage('user', text);
       inputEl.value = '';
 
-      let matched = false;
-      let reply = "";
-      for (let key in localAnswers) {
-        if (text.includes(key)) {
-          reply = localAnswers[key];
-          matched = true;
-          break;
-        }
-      }
-
-      if (!matched) {
-        reply = "ℹ️ **主題查表無精確匹配紀錄**\n\n目前對照表未找到與此關鍵字精確對應的影音筆記。建議參考右側『熱門主題對照』點選，或切換至【精華簡報與導覽】頁籤查閱觀念、質押信貸與正二配置之完整三張主題筆記卡片。";
-      }
+      const res = processQuery(text);
 
       setTimeout(() => {
-        appendMessage('assistant', reply);
+        appendMessage('assistant', res.answer);
       }, 300);
     };
 

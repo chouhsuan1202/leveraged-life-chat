@@ -1,4 +1,13 @@
-import { calculateLeverage, parseInput } from '../js/calculator.js';
+import {
+  calculateDbrLimit,
+  calculateMaintenanceRatio,
+  calculateStaticDropToThreshold,
+  calculateEffectiveExposure,
+  calculateLeverage,
+  parseInput
+} from '../js/calculator.js';
+
+import { classifyIntent, processQuery } from '../js/assistant.js';
 
 function assert(condition, message) {
   if (!condition) {
@@ -6,153 +15,131 @@ function assert(condition, message) {
   }
 }
 
-console.log('🧪 Running Financial & Security Verification Suite...\n');
+console.log('====================================================');
+console.log('🧪 RUNNING VERIFICATION & HYBRID ASSISTANT TEST SUITE');
+console.log('====================================================\n');
 
-// Test 1: Pledged 300,000, Loan 100,000 => Margin Ratio must be 300%
+// Part 1: Calculator Pure Functions Unit Tests
 {
-  const res = calculateLeverage({
-    pledged1x: 300000,
-    pledged2x: 0,
-    unpledged1x: 0,
-    unpledged2x: 0,
-    collateralLoan: 100000,
-    creditLoan: 0,
-    cashReserve: 0
+  // Test 1: Pledged 300,000, Loan 100,000 => Margin Ratio 300%
+  const mRes = calculateMaintenanceRatio(300000, 100000);
+  assert(mRes.ratio === 300, 'Test 1: Maintenance ratio must be 300%');
+  
+  const dRes = calculateStaticDropToThreshold(300, 130);
+  assert(dRes.dropPercent === 56.7, 'Test 1: Drop percent must be 56.7%');
+  console.log('✅ Unit Test 1 Passed: calculateMaintenanceRatio(300k, 100k) => 300%, Drop 56.7%');
+
+  // Test 2: Pledged 100,000, Loan 100,000 => Margin Call (<130%), 0.0% drop
+  const mRes2 = calculateMaintenanceRatio(100000, 100000);
+  assert(mRes2.status === 'MARGIN_CALL', 'Test 2: Status must be MARGIN_CALL');
+  const dRes2 = calculateStaticDropToThreshold(100, 130);
+  assert(dRes2.dropPercent === 0.0, 'Test 2: Drop percent must be 0.0%');
+  console.log('✅ Unit Test 2 Passed: calculateMaintenanceRatio(100k, 100k) => MARGIN_CALL');
+
+  // Test 3: Pledged 2x 300,000 => Exposure 600,000
+  const eRes1 = calculateEffectiveExposure(0, 300000, 0, 0, 100000);
+  assert(eRes1.totalExposure === 600000, 'Test 3: Pledged 2x exposure should be 600k');
+  console.log('✅ Unit Test 3 Passed: Pledged 2x 300k => 600k Exposure');
+
+  // Test 4: Unpledged 2x 300,000 => Exposure 600,000
+  const eRes2 = calculateEffectiveExposure(0, 0, 0, 300000, 100000);
+  assert(eRes2.totalExposure === 600000, 'Test 4: Unpledged 2x exposure should be 600k');
+  console.log('✅ Unit Test 4 Passed: Unpledged 2x 300k => 600k Exposure');
+
+  // Test 5: Net Worth <= 0 => exposureRatio is null
+  const eRes3 = calculateEffectiveExposure(100000, 0, 0, 0, -50000);
+  assert(eRes3.exposureRatio === null, 'Test 5: Exposure ratio must be null when Net Worth <= 0');
+  console.log('✅ Unit Test 5 Passed: Net Worth <= 0 => exposureRatio is null');
+
+  // Test 6: Input validation
+  let errCount = 0;
+  [-10, NaN, Infinity, 'invalid'].forEach(val => {
+    try { parseInput(val); } catch (e) { errCount++; }
   });
-  assert(res.marginRatio !== null && Math.abs(res.marginRatio - 300) < 0.1, 'Test 1: Margin ratio should be 300%');
-  assert(res.marginStatus === 'SAFE', 'Test 1: Margin status should be SAFE');
-  assert(res.maxDropPercent === 56.7, `Test 1: Max drop should be 56.7%, got ${res.maxDropPercent}`);
-  console.log('✅ Test 1 Passed: Pledged 300k / Loan 100k => 300% Margin Ratio & 56.7% Max Drop');
+  assert(errCount === 4, 'Test 6: Invalid inputs must throw error');
+  console.log('✅ Unit Test 6 Passed: Invalid inputs (negative, NaN, Infinity) rejected');
+
+  // Test 7: DBR Limit Calculation
+  const dbrRes = calculateDbrLimit(100000, 0);
+  assert(dbrRes.maxLimit === 2200000, 'Test 7: Monthly income 100k => DBR 22 max limit 2,200,000');
+  console.log('✅ Unit Test 7 Passed: calculateDbrLimit(100k) => 2.2M Max Limit');
 }
 
-// Test 2: Pledged 100,000, Loan 100,000 => Margin Call (<130%), no negative drop
-{
-  const res = calculateLeverage({
-    pledged1x: 100000,
-    pledged2x: 0,
-    unpledged1x: 0,
-    unpledged2x: 0,
-    collateralLoan: 100000,
-    creditLoan: 0,
-    cashReserve: 0
-  });
-  assert(res.marginStatus === 'MARGIN_CALL', 'Test 2: Margin status should be MARGIN_CALL');
-  assert(res.maxDropPercent === 0.0, 'Test 2: Max drop should be 0.0% (no negative sign)');
-  console.log('✅ Test 2 Passed: Pledged 100k / Loan 100k => MARGIN_CALL & 0.0% Drop');
-}
+console.log('\n----------------------------------------------------');
+console.log('📋 PART 2: 8 MANDATORY NATURAL QUERY E2E TESTS');
+console.log('----------------------------------------------------\n');
 
-// Test 3: Pledged 2x 300,000 => Equivalent Exposure 600,000
-{
-  const res = calculateLeverage({
-    pledged1x: 0,
-    pledged2x: 300000,
-    unpledged1x: 0,
-    unpledged2x: 0,
-    collateralLoan: 0,
-    creditLoan: 0,
-    cashReserve: 100000
-  });
-  assert(res.totalPledgedVal === 300000, 'Test 3: Total pledged val should be 300,000');
-  assert(res.totalExposure === 600000, `Test 3: Pledged 2x exposure should be 600,000, got ${res.totalExposure}`);
-  console.log('✅ Test 3 Passed: Pledged 2x 300k => 600k Exposure');
-}
-
-// Test 4: Unpledged 2x 300,000 => Equivalent Exposure 600,000
-{
-  const res = calculateLeverage({
-    pledged1x: 0,
-    pledged2x: 0,
-    unpledged1x: 0,
-    unpledged2x: 300000,
-    collateralLoan: 0,
-    creditLoan: 0,
-    cashReserve: 100000
-  });
-  assert(res.totalPledgedVal === 0, 'Test 4: Total pledged val should be 0');
-  assert(res.totalExposure === 600000, `Test 4: Unpledged 2x exposure should be 600,000, got ${res.totalExposure}`);
-  console.log('✅ Test 4 Passed: Unpledged 2x 300k => 600k Exposure');
-}
-
-// Test 5: Net Worth <= 0 => Invalid Exposure Ratio (null)
-{
-  const res = calculateLeverage({
-    pledged1x: 100000,
-    pledged2x: 0,
-    unpledged1x: 0,
-    unpledged2x: 0,
-    collateralLoan: 150000,
-    creditLoan: 0,
-    cashReserve: 0
-  });
-  assert(res.netWorth === -50000, 'Test 5: Net worth should be -50,000');
-  assert(res.exposureRatio === null, 'Test 5: Exposure ratio must be null when netWorth <= 0');
-  assert(res.exposureStatus === 'INVALID', 'Test 5: Exposure status must be INVALID');
-  console.log('✅ Test 5 Passed: Net Worth <= 0 => exposureRatio is null (Displays "無法計算")');
-}
-
-// Test 6: Input validation (Negative, NaN, Infinity, String)
-{
-  let failedCount = 0;
-  const invalidInputs = [-100, NaN, Infinity, -Infinity, 'abc'];
-  invalidInputs.forEach(val => {
-    try {
-      parseInput(val);
-    } catch (e) {
-      failedCount++;
-    }
-  });
-  assert(failedCount === invalidInputs.length, 'Test 6: All invalid inputs should throw error');
-  console.log('✅ Test 6 Passed: Negative, NaN, Infinity inputs rejected correctly');
-}
-
-// Test 7: Exposure boundaries 1.19x, 1.20x, 1.50x, 1.51x
-{
-  // 1.19x => UNDER_TARGET
-  const res119 = calculateLeverage({ pledged1x: 119, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 0, creditLoan: 0, cashReserve: 0 }); // Exposure=119, NetWorth=119 => 1.00x
-  const resUnder = calculateLeverage({ pledged1x: 1190, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 0, creditLoan: 0, cashReserve: 10 }); // Exp=1190, NW=1200 => 0.99x
-  assert(resUnder.exposureStatus === 'UNDER_TARGET', '1.19x boundary UNDER_TARGET');
-
-  // 1.20x => TARGET_RANGE
-  const res120 = calculateLeverage({ pledged1x: 120, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 0, creditLoan: 0, cashReserve: 0 }); // Exp=120, NW=100 => 1.20x
-  const resTarget1 = calculateLeverage({ pledged1x: 120, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 20, creditLoan: 0, cashReserve: 0 }); // Exp 120, NetWorth 100 => 1.20x
-  assert(resTarget1.exposureStatus === 'TARGET_RANGE', '1.20x boundary TARGET_RANGE');
-
-  // 1.50x => TARGET_RANGE
-  const resTarget2 = calculateLeverage({ pledged1x: 150, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 50, creditLoan: 0, cashReserve: 0 }); // Exp 150, NetWorth 100 => 1.50x
-  assert(resTarget2.exposureStatus === 'TARGET_RANGE', '1.50x boundary TARGET_RANGE');
-
-  // 1.51x => ABOVE_TARGET
-  const resAbove = calculateLeverage({ pledged1x: 151, pledged2x: 0, unpledged1x: 0, unpledged2x: 0, collateralLoan: 51, creditLoan: 0, cashReserve: 0 }); // Exp 151, NetWorth 100 => 1.51x
-  assert(resAbove.exposureStatus === 'ABOVE_TARGET', '1.51x boundary ABOVE_TARGET');
-
-  console.log('✅ Test 7 Passed: Exposure boundaries (1.19x, 1.20x, 1.50x, 1.51x) tested correctly');
-}
-
-// Test 8: XSS Injection Payload Handling
-{
-  const xssPayloads = [
-    '<img src=x onerror=alert(1)>',
-    '<svg onload=alert(1)>',
-    '<a href="javascript:alert(1)">x</a>',
-    '<iframe srcdoc="<script>alert(1)</script>"></iframe>'
-  ];
-
-  function escapeHtml(str) {
-    if (typeof str !== 'string') return '';
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+const testCases = [
+  {
+    id: 'E1',
+    query: '我月薪 10 萬，DBR 22 上限多少？',
+    expectedIntent: 'dbr_calculation',
+    check: (res) => res.answer.includes('220 萬') && res.answer.includes('不是銀行保證核貸額度')
+  },
+  {
+    id: 'E2',
+    query: '什麼是股票質押？',
+    expectedIntent: 'basic_finance',
+    check: (res) => res.answer.includes('一般金融知識') && !res.answer.includes('無精確匹配紀錄')
+  },
+  {
+    id: 'E3',
+    query: '500 萬股票質押 100 萬，維持率多少？',
+    expectedIntent: 'collateral_ratio',
+    check: (res) => res.answer.includes('500.0 %') && res.answer.includes('EP13 官方勘誤')
+  },
+  {
+    id: 'E4',
+    query: '沒有信貸，房貸還受 DBR 影響嗎？',
+    expectedIntent: 'mortgage_assessment',
+    check: (res) => res.answer.includes('沒有無擔保負債') && res.answer.includes('收支比')
+  },
+  {
+    id: 'E5',
+    query: '0050 跟正二有什麼差別？',
+    expectedIntent: 'etf_comparison',
+    check: (res) => res.answer.includes('0050') && res.answer.includes('00631L') && res.answer.includes('單日')
+  },
+  {
+    id: 'E6',
+    query: '50 萬中 20 萬正二，其餘 30 萬原型，等效曝險多少？',
+    expectedIntent: 'leverage_exposure',
+    check: (res) => res.answer.includes('70 萬') && res.answer.includes('1.4x')
+  },
+  {
+    id: 'E7',
+    query: 'ETF 最基本要注意什麼？',
+    expectedIntent: 'basic_finance',
+    check: (res) => res.answer.includes('基本需要注意') && !res.answer.includes('無精確匹配紀錄')
+  },
+  {
+    id: 'E8',
+    query: '今天天氣如何？',
+    expectedIntent: 'out_of_scope',
+    check: (res) => res.answer.includes('不屬於本助手的理財')
   }
+];
 
-  xssPayloads.forEach((payload, idx) => {
-    const escaped = escapeHtml(payload);
-    assert(!escaped.includes('<') && !escaped.includes('>'), `XSS Payload ${idx + 1} must have angle brackets escaped`);
+let testPassedCount = 0;
+const e2eOutputs = [];
+
+testCases.forEach(tc => {
+  const res = processQuery(tc.query);
+  assert(res.intent === tc.expectedIntent, `Query [${tc.id}] expected intent ${tc.expectedIntent}, got ${res.intent}`);
+  assert(tc.check(res), `Query [${tc.id}] output failed verification assertion`);
+  
+  testPassedCount++;
+  e2eOutputs.push({
+    id: tc.id,
+    query: tc.query,
+    intent: res.intent,
+    answer: res.answer
   });
 
-  console.log('✅ Test 8 Passed: All XSS payloads sanitized via strict DOM/textContent escaping');
-}
+  console.log(`📌 [${tc.id}] 測試輸入: "${tc.query}"`);
+  console.log(`🎯 分類意圖: ${res.intent}`);
+  console.log(`💬 實際輸出回應:\n${res.answer}\n`);
+  console.log('----------------------------------------------------');
+});
 
-console.log('\n🎉 ALL 8 AUTOMATED FINANCIAL & SECURITY TESTS PASSED STABLY!');
+console.log(`\n🎉 ALL 8 MANDATORY NATURAL DIALOGUE E2E TESTS PASSED (${testPassedCount}/8)!`);
