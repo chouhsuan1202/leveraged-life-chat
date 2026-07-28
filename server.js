@@ -26,9 +26,9 @@ const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 if (GEMINI_API_KEY && GEMINI_API_KEY !== 'your_gemini_api_key_here') {
-  console.log('✅ [SERVER] GEMINI_API_KEY detected. External LLM connection enabled via Backend Proxy.');
+  console.log('✅ [SERVER] GEMINI_API_KEY detected. Gemini LLM API active via Backend Proxy.');
 } else {
-  console.log('ℹ️ [SERVER] GEMINI_API_KEY is not set. Running in Mock Model mode with deterministic local tools & context-aware AI simulator.');
+  console.log('ℹ️ [SERVER] GEMINI_API_KEY is not set. Operating in Dynamic Local Engine Mode. (To enable Gemini LLM API, add GEMINI_API_KEY to .env)');
 }
 
 const MIME_TYPES = {

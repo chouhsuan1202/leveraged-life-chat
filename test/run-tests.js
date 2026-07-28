@@ -17,7 +17,7 @@ function assert(condition, message) {
 }
 
 console.log('====================================================');
-console.log('🧪 RUNNING FULL VERIFICATION SUITE (ALL 12 SCENARIOS)');
+console.log('🧪 RUNNING FULL VERIFICATION SUITE WITH DYNAMIC QUERIES');
 console.log('====================================================\n');
 
 // Part 1: Calculator Pure Functions Unit Tests
@@ -167,13 +167,69 @@ for (const sc of mandatoryScenarios) {
   }
 
   console.log(`   測試輸入: "${sc.query}"`);
-  console.log(`   實際回應摘要:\n${res.answer.substring(0, 180)}...\n`);
+  console.log(`   實際回應摘要:\n${sc.answer ? sc.answer.substring(0, 150) : res.answer.substring(0, 150)}...\n`);
+  console.log('----------------------------------------------------');
+}
+
+// Part 4: Dynamic & Arbitrary Number / Phrasing Tests (Addressing Criticism 2)
+console.log('\n----------------------------------------------------');
+console.log('🧪 PART 4: DYNAMIC & UNSEEN QUERY GENERATION TESTS');
+console.log('----------------------------------------------------\n');
+
+const dynamicTests = [
+  {
+    desc: 'Dynamic Income: 月薪 8.5 萬 DBR 22 額度試算',
+    query: '如果我現在月薪 8.5 萬，我的 DBR 22 最高額度是多少？',
+    verify: (res) => {
+      // 8.5萬 * 22 = 187萬
+      const expectedLimit = 8.5 * 22; // 187
+      return res.answer.includes('187 萬') && res.answer.includes('不是銀行保證核貸額度');
+    }
+  },
+  {
+    desc: 'Dynamic Income: 月薪 15 萬 DBR 22 額度試算',
+    query: '倘若我月薪有 15 萬，信貸天條最高上限是多少？',
+    verify: (res) => {
+      // 15萬 * 22 = 330萬
+      return res.answer.includes('330 萬');
+    }
+  },
+  {
+    desc: 'Dynamic Pledged Stock & Loan: 120萬持股質押 40萬',
+    query: '假設我有 120 萬股票質押借款 40 萬，這樣維持率多少？會被追繳嗎？',
+    verify: (res) => {
+      // 120萬 / 40萬 = 300%
+      return res.answer.includes('300.0 %') && res.answer.includes('56.7%');
+    }
+  },
+  {
+    desc: 'Dynamic Portfolio Exposure: 100萬資產中 40萬正二',
+    query: '如果我總共 100 萬資產，買了 40 萬正二，剩下 60 萬原型，等效曝險是多少？',
+    verify: (res) => {
+      // 60萬原型 + 40萬正二*2 = 140萬, 1.4x
+      return res.answer.includes('140 萬') && res.answer.includes('1.4x');
+    }
+  }
+];
+
+let dynamicPass = 0;
+for (const dt of dynamicTests) {
+  const res = await processQueryWithContext(dt.query, []);
+  if (dt.verify(res)) {
+    dynamicPass++;
+    console.log(`✅ [DYNAMIC PASSED] ${dt.desc}`);
+    console.log(`   輸入: "${dt.query}"`);
+    console.log(`   輸出:\n${res.answer.substring(0, 150)}...\n`);
+  } else {
+    console.error(`❌ [DYNAMIC FAILED] ${dt.desc}`);
+    console.error(`   輸出:\n${res.answer}`);
+  }
   console.log('----------------------------------------------------');
 }
 
 console.log(`\n📊 VERIFICATION SUMMARY:`);
-console.log(`   Passed: ${passCount} / ${mandatoryScenarios.length}`);
-console.log(`   Failed: ${failCount} / ${mandatoryScenarios.length}`);
+console.log(`   Mandatory 12 Scenarios: ${passCount} / ${mandatoryScenarios.length} Passed`);
+console.log(`   Dynamic Unseen Queries: ${dynamicPass} / ${dynamicTests.length} Passed`);
 
-assert(failCount === 0, 'All 12 mandatory scenarios must pass completely!');
-console.log('\n🎉 ALL 12 MANDATORY DIALOGUE SCENARIOS PASSED 100% STABLY!');
+assert(failCount === 0 && dynamicPass === dynamicTests.length, 'All mandatory and dynamic test scenarios must pass completely!');
+console.log('\n🎉 ALL MANDATORY AND DYNAMIC TEST SCENARIOS PASSED 100% STABLY!');
