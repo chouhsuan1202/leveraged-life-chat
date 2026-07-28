@@ -674,16 +674,16 @@
     
     <!-- 4 Clean Navigation Tabs -->
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('chat')">
+      <button class="tab-btn active" onclick="switchTab('chat', this)">
         <i class="fa-solid fa-comments"></i> 理財對話
       </button>
-      <button class="tab-btn" onclick="switchTab('calc')">
+      <button class="tab-btn" onclick="switchTab('calc', this)">
         <i class="fa-solid fa-calculator"></i> 槓桿計算
       </button>
-      <button class="tab-btn" onclick="switchTab('assets')">
+      <button class="tab-btn" onclick="switchTab('assets', this)">
         <i class="fa-solid fa-brain"></i> 跨國帳戶與長期記憶庫
       </button>
-      <button class="tab-btn" onclick="switchTab('slides')">
+      <button class="tab-btn" onclick="switchTab('slides', this)">
         <i class="fa-solid fa-file-powerpoint"></i> 精華簡報與導覽
       </button>
     </div>
@@ -966,12 +966,22 @@
         .replace(/'/g, '&#039;');
     }
 
-    window.switchTab = function(tabId) {
+    window.switchTab = function(tabId, btnEl) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      event.currentTarget.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
+      let activeBtn = btnEl;
+      if (!activeBtn && typeof window !== 'undefined' && window.event) {
+        activeBtn = window.event.currentTarget || window.event.target;
+      }
+      if (activeBtn && activeBtn.classList) {
+        activeBtn.classList.add('active');
+      }
+
+      const targetContent = document.getElementById('tab-' + tabId);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
     };
 
     window.handleKeyDown = function(e) {
