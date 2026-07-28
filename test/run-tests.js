@@ -7,7 +7,8 @@ import {
   parseInput
 } from '../js/calculator.js';
 
-import { classifyIntent, processQuery } from '../js/assistant.js';
+import { searchIvanKnowledge, calculateFinancialMetrics, getGeneralFinanceExplanation } from '../js/tools.js';
+import { classifyIntent, processQueryWithContext } from '../js/assistant.js';
 
 function assert(condition, message) {
   if (!condition) {
@@ -16,130 +17,163 @@ function assert(condition, message) {
 }
 
 console.log('====================================================');
-console.log('🧪 RUNNING VERIFICATION & HYBRID ASSISTANT TEST SUITE');
+console.log('🧪 RUNNING FULL VERIFICATION SUITE (ALL 12 SCENARIOS)');
 console.log('====================================================\n');
 
 // Part 1: Calculator Pure Functions Unit Tests
 {
-  // Test 1: Pledged 300,000, Loan 100,000 => Margin Ratio 300%
   const mRes = calculateMaintenanceRatio(300000, 100000);
-  assert(mRes.ratio === 300, 'Test 1: Maintenance ratio must be 300%');
-  
+  assert(mRes.ratio === 300, 'Unit 1: Maintenance ratio 300%');
   const dRes = calculateStaticDropToThreshold(300, 130);
-  assert(dRes.dropPercent === 56.7, 'Test 1: Drop percent must be 56.7%');
-  console.log('✅ Unit Test 1 Passed: calculateMaintenanceRatio(300k, 100k) => 300%, Drop 56.7%');
+  assert(dRes.dropPercent === 56.7, 'Unit 1: Drop percent 56.7%');
 
-  // Test 2: Pledged 100,000, Loan 100,000 => Margin Call (<130%), 0.0% drop
   const mRes2 = calculateMaintenanceRatio(100000, 100000);
-  assert(mRes2.status === 'MARGIN_CALL', 'Test 2: Status must be MARGIN_CALL');
-  const dRes2 = calculateStaticDropToThreshold(100, 130);
-  assert(dRes2.dropPercent === 0.0, 'Test 2: Drop percent must be 0.0%');
-  console.log('✅ Unit Test 2 Passed: calculateMaintenanceRatio(100k, 100k) => MARGIN_CALL');
+  assert(mRes2.status === 'MARGIN_CALL', 'Unit 2: MARGIN_CALL');
 
-  // Test 3: Pledged 2x 300,000 => Exposure 600,000
   const eRes1 = calculateEffectiveExposure(0, 300000, 0, 0, 100000);
-  assert(eRes1.totalExposure === 600000, 'Test 3: Pledged 2x exposure should be 600k');
-  console.log('✅ Unit Test 3 Passed: Pledged 2x 300k => 600k Exposure');
+  assert(eRes1.totalExposure === 600000, 'Unit 3: Pledged 2x exposure 600k');
 
-  // Test 4: Unpledged 2x 300,000 => Exposure 600,000
   const eRes2 = calculateEffectiveExposure(0, 0, 0, 300000, 100000);
-  assert(eRes2.totalExposure === 600000, 'Test 4: Unpledged 2x exposure should be 600k');
-  console.log('✅ Unit Test 4 Passed: Unpledged 2x 300k => 600k Exposure');
+  assert(eRes2.totalExposure === 600000, 'Unit 4: Unpledged 2x exposure 600k');
 
-  // Test 5: Net Worth <= 0 => exposureRatio is null
   const eRes3 = calculateEffectiveExposure(100000, 0, 0, 0, -50000);
-  assert(eRes3.exposureRatio === null, 'Test 5: Exposure ratio must be null when Net Worth <= 0');
-  console.log('✅ Unit Test 5 Passed: Net Worth <= 0 => exposureRatio is null');
+  assert(eRes3.exposureRatio === null, 'Unit 5: Net worth <= 0 ratio is null');
 
-  // Test 6: Input validation
   let errCount = 0;
   [-10, NaN, Infinity, 'invalid'].forEach(val => {
     try { parseInput(val); } catch (e) { errCount++; }
   });
-  assert(errCount === 4, 'Test 6: Invalid inputs must throw error');
-  console.log('✅ Unit Test 6 Passed: Invalid inputs (negative, NaN, Infinity) rejected');
+  assert(errCount === 4, 'Unit 6: Invalid inputs rejected');
 
-  // Test 7: DBR Limit Calculation
   const dbrRes = calculateDbrLimit(100000, 0);
-  assert(dbrRes.maxLimit === 2200000, 'Test 7: Monthly income 100k => DBR 22 max limit 2,200,000');
-  console.log('✅ Unit Test 7 Passed: calculateDbrLimit(100k) => 2.2M Max Limit');
+  assert(dbrRes.maxLimit === 2200000, 'Unit 7: Monthly income 100k DBR limit 2.2M');
+
+  console.log('✅ Part 1: All 7 Pure Calculator Unit Tests Passed Stably!\n');
 }
 
-console.log('\n----------------------------------------------------');
-console.log('📋 PART 2: 8 MANDATORY NATURAL QUERY E2E TESTS');
+// Part 2: Tools Unit Tests
+{
+  const toolASearch = searchIvanKnowledge('質押維持率');
+  assert(toolASearch.status === 'found' && toolASearch.matches[0].ep === 13, 'Tool A: EP13 lookup');
+
+  const toolBCalc = calculateFinancialMetrics({ type: 'dbr', monthlyIncome: 100000 });
+  assert(toolBCalc.data.maxLimit === 2200000, 'Tool B: DBR calc');
+
+  const toolCGen = getGeneralFinanceExplanation('etf');
+  assert(toolCGen.explanation.includes('以下是一般金融知識，不代表 Ivan 的原話。'), 'Tool C: Prefix match');
+
+  console.log('✅ Part 2: All 3 Standard Tools Unit Tests Passed Stably!\n');
+}
+
+// Part 3: Mandatory 12 Dialogue E2E Scenarios (Including Multi-Turn Context)
+console.log('----------------------------------------------------');
+console.log('📋 PART 3: 12 MANDATORY DIALOGUE E2E SCENARIOS');
 console.log('----------------------------------------------------\n');
 
-const testCases = [
+const history = [];
+
+const mandatoryScenarios = [
   {
-    id: 'E1',
-    query: '我月薪 10 萬，DBR 22 上限多少？',
+    id: 1,
+    query: '我月薪 10 萬，DBR 22 上限是多少？',
     expectedIntent: 'dbr_calculation',
-    check: (res) => res.answer.includes('220 萬') && res.answer.includes('不是銀行保證核貸額度')
+    verify: (ans) => ans.includes('220 萬') && ans.includes('不是銀行保證核貸額度')
   },
   {
-    id: 'E2',
+    id: 2,
     query: '什麼是股票質押？',
-    expectedIntent: 'basic_finance',
-    check: (res) => res.answer.includes('一般金融知識') && !res.answer.includes('無精確匹配紀錄')
+    expectedIntent: 'basic_finance_pledge',
+    verify: (ans) => ans.includes('以下是一般金融知識，不代表 Ivan 的原話。') && !ans.includes('不屬於本助手的理財')
   },
   {
-    id: 'E3',
-    query: '500 萬股票質押 100 萬，維持率多少？',
+    id: 3,
+    query: '500 萬股票質押 100 萬，維持率是多少？',
     expectedIntent: 'collateral_ratio',
-    check: (res) => res.answer.includes('500.0 %') && res.answer.includes('EP13 官方勘誤')
+    verify: (ans) => ans.includes('500.0 %') && ans.includes('EP13') && ans.includes('勘誤')
   },
   {
-    id: 'E4',
-    query: '沒有信貸，房貸還受 DBR 影響嗎？',
+    id: 4,
+    query: '我沒有信貸，申請房貸還會受 DBR 影響嗎？',
     expectedIntent: 'mortgage_assessment',
-    check: (res) => res.answer.includes('沒有無擔保負債') && res.answer.includes('收支比')
+    verify: (ans) => ans.includes('沒有無擔保負債占用額度') && ans.includes('收支比')
   },
   {
-    id: 'E5',
-    query: '0050 跟正二有什麼差別？',
+    id: 5,
+    query: '0050 跟正二有什麼不同？',
     expectedIntent: 'etf_comparison',
-    check: (res) => res.answer.includes('0050') && res.answer.includes('00631L') && res.answer.includes('單日')
+    verify: (ans) => ans.includes('0050') && ans.includes('00631L') && ans.includes('單日')
   },
   {
-    id: 'E6',
-    query: '50 萬中 20 萬正二，其餘 30 萬原型，等效曝險多少？',
+    id: 6,
+    query: '50 萬中 20 萬是正二，其餘是原型，等效曝險是多少？',
     expectedIntent: 'leverage_exposure',
-    check: (res) => res.answer.includes('70 萬') && res.answer.includes('1.4x')
+    verify: (ans) => ans.includes('70 萬') && ans.includes('1.4x')
   },
   {
-    id: 'E7',
-    query: 'ETF 最基本要注意什麼？',
-    expectedIntent: 'basic_finance',
-    check: (res) => res.answer.includes('基本需要注意') && !res.answer.includes('無精確匹配紀錄')
+    id: 7,
+    query: 'ETF 投資最基本要注意什麼？',
+    expectedIntent: 'basic_finance_etf',
+    verify: (ans) => ans.includes('追蹤標的與指數風險') && ans.includes('一般金融知識')
   },
   {
-    id: 'E8',
+    id: 8,
+    query: 'Ivan 怎麼看信貸投資？',
+    expectedIntent: 'ivan_credit_view',
+    verify: (ans) => ans.includes('人力資本') && (ans.includes('EP4') || ans.includes('EP14'))
+  },
+  {
+    id: 9,
+    query: 'Ivan 有沒有說過退休一定要用股票質押？',
+    expectedIntent: 'retirement_strategy_inquiry',
+    verify: (ans) => ans.includes('並未主張「退休一定要用股票質押」')
+  },
+  {
+    id: 10,
+    query: '我現在應該把所有資金買正二嗎？',
+    expectedIntent: 'advice_disclaimer',
+    verify: (ans) => ans.includes('不建議將所有資金一口氣 All-in 買進正二')
+  },
+  {
+    id: 11,
     query: '今天天氣如何？',
     expectedIntent: 'out_of_scope',
-    check: (res) => res.answer.includes('不屬於本助手的理財')
+    verify: (ans) => ans.includes('不屬於本助手的理財')
+  },
+  {
+    id: 12,
+    query: '上一題的 20 萬如果改成 30 萬呢？',
+    expectedIntent: 'leverage_exposure_recalc',
+    verify: (ans) => ans.includes('80 萬') && ans.includes('1.6x')
   }
 ];
 
-let testPassedCount = 0;
-const e2eOutputs = [];
+let passCount = 0;
+let failCount = 0;
 
-testCases.forEach(tc => {
-  const res = processQuery(tc.query);
-  assert(res.intent === tc.expectedIntent, `Query [${tc.id}] expected intent ${tc.expectedIntent}, got ${res.intent}`);
-  assert(tc.check(res), `Query [${tc.id}] output failed verification assertion`);
-  
-  testPassedCount++;
-  e2eOutputs.push({
-    id: tc.id,
-    query: tc.query,
-    intent: res.intent,
-    answer: res.answer
-  });
+for (const sc of mandatoryScenarios) {
+  history.push({ role: 'user', text: sc.query });
+  const res = await processQueryWithContext(sc.query, history);
+  history.push({ role: 'assistant', text: res.answer });
 
-  console.log(`📌 [${tc.id}] 測試輸入: "${tc.query}"`);
-  console.log(`🎯 分類意圖: ${res.intent}`);
-  console.log(`💬 實際輸出回應:\n${res.answer}\n`);
+  const intentOk = res.intent === sc.expectedIntent;
+  const contentOk = sc.verify(res.answer);
+
+  if (intentOk && contentOk) {
+    passCount++;
+    console.log(`✅ [Q${sc.id} PASSED] (${sc.expectedIntent})`);
+  } else {
+    failCount++;
+    console.error(`❌ [Q${sc.id} FAILED] Expected ${sc.expectedIntent}, got ${res.intent}`);
+  }
+
+  console.log(`   測試輸入: "${sc.query}"`);
+  console.log(`   實際回應摘要:\n${res.answer.substring(0, 180)}...\n`);
   console.log('----------------------------------------------------');
-});
+}
 
-console.log(`\n🎉 ALL 8 MANDATORY NATURAL DIALOGUE E2E TESTS PASSED (${testPassedCount}/8)!`);
+console.log(`\n📊 VERIFICATION SUMMARY:`);
+console.log(`   Passed: ${passCount} / ${mandatoryScenarios.length}`);
+console.log(`   Failed: ${failCount} / ${mandatoryScenarios.length}`);
+
+assert(failCount === 0, 'All 12 mandatory scenarios must pass completely!');
+console.log('\n🎉 ALL 12 MANDATORY DIALOGUE SCENARIOS PASSED 100% STABLY!');

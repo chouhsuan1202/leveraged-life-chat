@@ -998,7 +998,9 @@
 
   <script type="module">
     import { calculateLeverage, parseInput } from './js/calculator.js';
-    import { processQuery } from './js/assistant.js';
+    import { processQueryWithContext } from './js/assistant.js';
+
+    let chatHistory = [];
 
     // Strict HTML Sanitization helper
     function escapeHtml(str) {
@@ -1041,13 +1043,30 @@
       if (!text) return;
 
       appendMessage('user', text);
+      chatHistory.push({ role: 'user', text });
       inputEl.value = '';
 
-      const res = processQuery(text);
+      let res;
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: chatHistory })
+        });
+        if (response.ok) {
+          res = await response.json();
+        } else {
+          res = await processQueryWithContext(text, chatHistory);
+        }
+      } catch (err) {
+        res = await processQueryWithContext(text, chatHistory);
+      }
+
+      chatHistory.push({ role: 'assistant', text: res.answer });
 
       setTimeout(() => {
         appendMessage('assistant', res.answer);
-      }, 300);
+      }, 200);
     };
 
     function renderMarkdownText(text) {
