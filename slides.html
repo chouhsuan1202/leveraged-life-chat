@@ -65,6 +65,19 @@
       justify-content: space-between;
       box-shadow: var(--shadow);
       position: relative;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.drawer-open .slide-card {
+      transform: translateX(-175px);
+    }
+
+    body.drawer-open .controls {
+      right: 370px;
+    }
+
+    body.drawer-open .btn-notes-toggle {
+      right: 370px;
     }
 
     .slide-badge {
@@ -687,7 +700,9 @@
 
     // Notes Drawer Management
     function toggleDrawer() {
-      document.getElementById('notes-drawer').classList.toggle('open');
+      const drawer = document.getElementById('notes-drawer');
+      const isOpen = drawer.classList.toggle('open');
+      document.body.classList.toggle('drawer-open', isOpen);
     }
 
     function getNotes() {
@@ -709,6 +724,7 @@
       localStorage.setItem('ppt_side_notes', JSON.stringify(notes));
       renderNotes();
       document.getElementById('notes-drawer').classList.add('open');
+      document.body.classList.add('drawer-open');
     }
 
     function deleteNote(id) {
