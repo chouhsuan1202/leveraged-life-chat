@@ -746,35 +746,35 @@
           <div class="form-group">
             <label>已設質原型 1x 擔保品市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-pledged-1x" value="300000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-pledged-1x" value="300000" min="0" oninput="runLeverageCalc()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>已設質正二 2x 擔保品市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-pledged-2x" value="0" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-pledged-2x" value="0" min="0" oninput="runLeverageCalc()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>未設質原型 1x 股票市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-unpledged-1x" value="300000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-unpledged-1x" value="300000" min="0" oninput="runLeverageCalc()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>未設質正二 2x 股票市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-unpledged-2x" value="400000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-unpledged-2x" value="400000" min="0" oninput="runLeverageCalc()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>股票質押借款金額</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-collateral-loan" value="300000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-collateral-loan" value="300000" min="0" oninput="runLeverageCalc()">
               <span class="input-unit">元</span>
             </div>
           </div>
@@ -996,7 +996,9 @@
     <div>Designed by Hsuan x her AI bestie</div>
   </footer>
 
-  <script>
+  <script type="module">
+    import { calculateLeverage, parseInput } from './js/calculator.js';
+
     // Strict HTML Sanitization helper
     function escapeHtml(str) {
       if (typeof str !== 'string') return '';
@@ -1009,37 +1011,37 @@
     }
 
     const localAnswers = {
-      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP14 (信貸談判與 DBR 22 規範) / 金融機構房貸授信實務指南\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
-      "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n📌 **引用出處**：Podcast EP13 (含 500% 官方勘誤) / 證交所業務借貸規定\n\n- **精準計算公式**：\`維持率 = (實際設質擔保品股票市值 / 質押借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。若當前維持率已低於 130%，跌幅將顯示 0.0%（已觸及追繳）。`,
-      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n📌 **引用出處**：Podcast EP31 / 證交所槓桿型 ETF 警示說明\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
-      "加碼": `### 🚨 大盤回檔加碼風控前提\n\n📌 **引用出處**：Podcast EP35 / EP38 回檔加碼 SOP\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
+      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP14 (信貸談判與 DBR 22 規範) / 金融機構房貸授信實務指南 (description_only)\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
+      "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n📌 **引用出處**：Podcast EP13 (含 500% 官方勘誤) / 證交所業務借貸規定 (description_only)\n\n- **精準計算公式**：\`維持率 = (實際設質擔保品股票市值 / 質押借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。若當前維持率已低於 130%，跌幅將顯示 0.0%（已觸及追繳）。`,
+      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n📌 **引用出處**：Podcast EP31 / 證交所槓桿型 ETF 警示說明 (description_only)\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
+      "加碼": `### 🚨 大盤回檔加碼風控前提\n\n📌 **引用出處**：Podcast EP35 / EP38 回檔加碼 SOP (description_only)\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
     };
 
-    function switchTab(tabId) {
+    window.switchTab = function(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
       event.currentTarget.classList.add('active');
       document.getElementById('tab-' + tabId).classList.add('active');
-    }
+    };
 
-    function handleKeyDown(e) {
+    window.handleKeyDown = function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
-    }
+    };
 
-    function askQuickPrompt(text) {
+    window.askQuickPrompt = function(text) {
       document.getElementById('user-input').value = text;
       sendMessage();
-    }
+    };
 
-    function openFullSlides() {
+    window.openFullSlides = function() {
       window.open('slides.html', '_blank');
-    }
+    };
 
-    async function sendMessage() {
+    window.sendMessage = async function() {
       const inputEl = document.getElementById('user-input');
       const text = inputEl.value.trim();
       if (!text) return;
@@ -1064,13 +1066,13 @@
       setTimeout(() => {
         appendMessage('assistant', reply);
       }, 300);
-    }
+    };
 
     function renderMarkdownText(text) {
       if (window.marked && typeof window.marked.parse === 'function') {
         const rawHtml = window.marked.parse(text);
         if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
-          return window.DOMPurify.sanitize(rawHtml);
+          return window.DOMPurify.sanitize(rawHtml, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'code', 'h3', 'h4'] });
         }
         return escapeHtml(rawHtml);
       }
@@ -1094,92 +1096,84 @@
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
     }
 
-    // Precise Calculator Edge Case Logic with Pledging 1x & 2x Breakdown
-    function calculateLeverage() {
-      const pledged1x = Math.max(0, parseFloat(document.getElementById('inp-pledged-1x').value) || 0);
-      const pledged2x = Math.max(0, parseFloat(document.getElementById('inp-pledged-2x').value) || 0);
-      const unpledged1x = Math.max(0, parseFloat(document.getElementById('inp-unpledged-1x').value) || 0);
-      const unpledged2x = Math.max(0, parseFloat(document.getElementById('inp-unpledged-2x').value) || 0);
-      
-      const colLoan = Math.max(0, parseFloat(document.getElementById('inp-collateral-loan').value) || 0);
-      const credLoan = Math.max(0, parseFloat(document.getElementById('inp-credit-loan').value) || 0);
-      const cash = Math.max(0, parseFloat(document.getElementById('inp-cash-reserve').value) || 0);
+    // Precise Calculator Edge Case Logic binding to js/calculator.js
+    window.runLeverageCalc = function() {
+      try {
+        const pledged1x = parseFloat(document.getElementById('inp-pledged-1x').value) || 0;
+        const pledged2x = parseFloat(document.getElementById('inp-pledged-2x').value) || 0;
+        const unpledged1x = parseFloat(document.getElementById('inp-unpledged-1x').value) || 0;
+        const unpledged2x = parseFloat(document.getElementById('inp-unpledged-2x').value) || 0;
+        const collateralLoan = parseFloat(document.getElementById('inp-collateral-loan').value) || 0;
+        const creditLoan = parseFloat(document.getElementById('inp-credit-loan').value) || 0;
+        const cashReserve = parseFloat(document.getElementById('inp-cash-reserve').value) || 0;
 
-      const totalPledgedStockVal = pledged1x + pledged2x;
-      const totalStockVal = totalPledgedStockVal + unpledged1x + unpledged2x;
-      
-      // Total Exposure calculation correctly accounts for both pledged & unpledged 2x ETFs
-      const totalExposure = (pledged1x + unpledged1x) + ((pledged2x + unpledged2x) * 2);
-      
-      const totalLiabilities = colLoan + credLoan;
-      const netWorth = totalStockVal + cash - totalLiabilities;
-      
-      // Exposure Ratio Edge Handling
-      const exposureEl = document.getElementById('res-exposure-ratio');
-      const exposureBadge = document.getElementById('badge-exposure');
-      if (netWorth <= 0) {
-        exposureEl.innerText = '無法計算 (資不抵債)';
-        exposureBadge.className = 'status-badge badge-danger';
-        exposureBadge.innerText = '資不抵債 (淨資產<=0)';
-      } else {
-        const exposureRatio = (totalExposure / netWorth).toFixed(2);
-        exposureEl.innerText = `${exposureRatio} x`;
-        if (parseFloat(exposureRatio) < 1.2) {
-          exposureBadge.className = 'status-badge badge-safe';
-          exposureBadge.innerText = '低於目標 (<1.2x)';
-        } else if (parseFloat(exposureRatio) <= 1.5) {
-          exposureBadge.className = 'status-badge badge-safe';
-          exposureBadge.innerText = '目標風控區間 (1.2x-1.5x)';
+        const res = calculateLeverage({
+          pledged1x, pledged2x, unpledged1x, unpledged2x, collateralLoan, creditLoan, cashReserve
+        });
+
+        // Exposure UI
+        const exposureEl = document.getElementById('res-exposure-ratio');
+        const exposureBadge = document.getElementById('badge-exposure');
+        if (res.exposureRatio === null) {
+          exposureEl.innerText = '無法計算 (資不抵債)';
+          exposureBadge.className = 'status-badge badge-danger';
+          exposureBadge.innerText = '資不抵債 (淨資產<=0)';
         } else {
-          exposureBadge.className = 'status-badge badge-warning';
-          exposureBadge.innerText = '高於目標 (>1.5x)';
+          exposureEl.innerText = `${res.exposureRatio.toFixed(2)} x`;
+          if (res.exposureStatus === 'UNDER_TARGET') {
+            exposureBadge.className = 'status-badge badge-safe';
+            exposureBadge.innerText = '低於目標 (<1.2x)';
+          } else if (res.exposureStatus === 'TARGET_RANGE') {
+            exposureBadge.className = 'status-badge badge-safe';
+            exposureBadge.innerText = '目標風控區間 (1.2x-1.5x)';
+          } else {
+            exposureBadge.className = 'status-badge badge-warning';
+            exposureBadge.innerText = '高於目標 (>1.5x)';
+          }
         }
-      }
 
-      // Net Worth formatting
-      document.getElementById('res-net-worth').innerText = `NT$ ${netWorth.toLocaleString()}`;
+        // Net Worth UI
+        document.getElementById('res-net-worth').innerText = `NT$ ${res.netWorth.toLocaleString()}`;
 
-      // Maintenance Margin Edge Handling (Strictly Pledging Stock ONLY)
-      const marginEl = document.getElementById('res-margin-ratio');
-      const marginBadge = document.getElementById('badge-margin');
-      const dropEl = document.getElementById('res-max-drop');
+        // Margin Ratio UI
+        const marginEl = document.getElementById('res-margin-ratio');
+        const marginBadge = document.getElementById('badge-margin');
+        const dropEl = document.getElementById('res-max-drop');
 
-      if (colLoan === 0) {
-        marginEl.innerText = '∞ %';
-        marginBadge.className = 'status-badge badge-safe';
-        marginBadge.innerText = '無質押借款';
-        dropEl.innerText = 'N/A (無借款)';
-      } else if (totalPledgedStockVal === 0) {
-        marginEl.innerText = '0.0 %';
-        marginBadge.className = 'status-badge badge-danger';
-        marginBadge.innerText = '有借款但未設定設質';
-        dropEl.innerText = '0.0 % (無擔保品)';
-      } else {
-        const marginRatioNum = (totalPledgedStockVal / colLoan) * 100;
-        marginEl.innerText = `${marginRatioNum.toFixed(1)} %`;
-
-        if (marginRatioNum < 130) {
+        if (res.marginStatus === 'NO_LOAN') {
+          marginEl.innerText = '∞ %';
+          marginBadge.className = 'status-badge badge-safe';
+          marginBadge.innerText = '無質押借款';
+          dropEl.innerText = 'N/A (無借款)';
+        } else if (res.marginStatus === 'NO_COLLATERAL') {
+          marginEl.innerText = '0.0 %';
+          marginBadge.className = 'status-badge badge-danger';
+          marginBadge.innerText = '有借款但未設定設質';
+          dropEl.innerText = '0.0 % (無擔保品)';
+        } else if (res.marginStatus === 'MARGIN_CALL') {
+          marginEl.innerText = `${res.marginRatio.toFixed(1)} %`;
           marginBadge.className = 'status-badge badge-danger';
           marginBadge.innerText = '已低於追繳線 (130%)';
           dropEl.innerText = '0.0 % (已觸及追繳)';
-        } else if (marginRatioNum < 150) {
-          marginBadge.className = 'status-badge badge-danger';
-          marginBadge.innerText = '警告：低於 150%';
-          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
-          dropEl.innerText = `-${dropPct} %`;
-        } else if (marginRatioNum < 200) {
-          marginBadge.className = 'status-badge badge-warning';
-          marginBadge.innerText = '警戒區域 (150%-200%)';
-          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
-          dropEl.innerText = `-${dropPct} %`;
         } else {
-          marginBadge.className = 'status-badge badge-safe';
-          marginBadge.innerText = '維持率充裕 (>200%)';
-          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
-          dropEl.innerText = `-${dropPct} %`;
+          marginEl.innerText = `${res.marginRatio.toFixed(1)} %`;
+          dropEl.innerText = `-${res.maxDropPercent.toFixed(1)} %`;
+
+          if (res.marginStatus === 'WARNING') {
+            marginBadge.className = 'status-badge badge-danger';
+            marginBadge.innerText = '警告：低於 150%';
+          } else if (res.marginStatus === 'ALERT') {
+            marginBadge.className = 'status-badge badge-warning';
+            marginBadge.innerText = '警戒區域 (150%-200%)';
+          } else {
+            marginBadge.className = 'status-badge badge-safe';
+            marginBadge.innerText = '維持率充裕 (>200%)';
+          }
         }
+      } catch (e) {
+        console.error(e);
       }
-    }
+    };
 
     // Private Asset Table Operations
     function addHoldingRow() {
@@ -1248,18 +1242,49 @@
       document.getElementById('inp-unpledged-1x').value = unpledged1x;
       document.getElementById('inp-unpledged-2x').value = unpledged2x;
       document.getElementById('inp-collateral-loan').value = totalLoan;
-      calculateLeverage();
+      window.runLeverageCalc();
 
       alert('✅ 已儲存私人資產資料至本機瀏覽器 (localStorage)！');
-    }
+    };
 
-    function clearPrivateAssetDetails() {
+    window.clearPrivateAssetDetails = function() {
       if (confirm('確定要清空本機的所有私人資產細節嗎？')) {
         localStorage.removeItem('private_assets_list');
         document.getElementById('body-holdings').innerHTML = '';
         alert('已清空本機資料。');
       }
-    }
+    };
+
+    window.addHoldingRow = function() {
+      const tbody = document.getElementById('body-holdings');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" placeholder="股票標的" class="h-name"></td>
+        <td>
+          <select class="h-type">
+            <option value="1x">原型 1x</option>
+            <option value="2x">正二 2x</option>
+          </select>
+        </td>
+        <td>
+          <select class="h-is-pledged">
+            <option value="yes">已設質擔保品</option>
+            <option value="no" selected>未設質自由持股</option>
+          </select>
+        </td>
+        <td><input type="number" placeholder="市值" min="0" class="h-val"></td>
+        <td><input type="number" placeholder="借款" min="0" class="h-loan"></td>
+        <td><input type="text" placeholder="說明" class="h-note"></td>
+        <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+      `;
+      tbody.appendChild(tr);
+    };
+
+    window.removeRow = function(btn) {
+      btn.closest('tr').remove();
+    };
+
+    window.savePrivateAssetDetails = savePrivateAssetDetails;
 
     function loadPrivateAssetDetails() {
       const saved = localStorage.getItem('private_assets_list');
@@ -1297,10 +1322,10 @@
       }
     }
 
-    window.onload = () => {
+    window.addEventListener('DOMContentLoaded', () => {
       loadPrivateAssetDetails();
-      calculateLeverage();
-    };
+      window.runLeverageCalc();
+    });
   </script>
 </body>
 </html>
