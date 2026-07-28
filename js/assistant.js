@@ -249,7 +249,7 @@ export async function processQueryWithContext(query, history = [], anonymizedPor
     default: {
       return {
         intent: 'out_of_scope',
-        answer: `您好！我是槓桿理財對話助手。您的提問「${query}」不屬於本助手的理財與槓桿風控服務範圍。\n\n請隨時詢問我關於 **股票質押維持率試算、DBR 22 信貸額度、0050與正二配置比率或房貸授信評估** 等金融理財問題！`,
+        answer: `您好！我是槓桿人生AI。您的提問「${query}」不屬於本助手的理財與槓桿風控服務範圍。\n\n請隨時詢問我關於 **股票質押維持率試算、DBR 22 信貸額度、0050與正二配置比率或房貸授信評估** 等金融理財問題！`,
         meta: {}
       };
     }
