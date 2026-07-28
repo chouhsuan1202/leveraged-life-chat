@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>槓桿人生 8 大主題精華簡報 (PPT 筆記與 AI 釋義版)</title>
+  <title>槓桿人生 8 大主題精華簡報 (圖表圖解與 Side-Note 版)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 2rem;
+      padding: 1.5rem;
       position: relative;
     }
 
@@ -57,9 +57,9 @@
       border: 1px solid var(--border-color);
       border-radius: 20px;
       width: 100%;
-      max-width: 980px;
-      height: 82vh;
-      padding: 2.25rem;
+      max-width: 1020px;
+      height: 85vh;
+      padding: 2rem 2.25rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -91,57 +91,24 @@
       font-size: 0.82rem;
       font-weight: 700;
       width: fit-content;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
     .slide-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.85rem;
+      font-size: 1.75rem;
       font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
       line-height: 1.25;
     }
 
     .slide-content {
       flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-      align-items: start;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       overflow-y: auto;
-    }
-
-    .point-box {
-      background: #f1f5f9;
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 1.25rem;
-      transition: transform 0.2s;
-    }
-
-    .point-box:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary);
-    }
-
-    .point-icon {
-      font-size: 1.35rem;
-      color: var(--primary);
-      margin-bottom: 0.65rem;
-    }
-
-    .point-title {
-      font-weight: 700;
-      font-size: 1.05rem;
-      margin-bottom: 0.4rem;
-      color: var(--text-main);
-    }
-
-    .point-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.55;
     }
 
     /* Term Chips (Clickable for AI Explanation) */
@@ -161,12 +128,217 @@
       color: white;
     }
 
+    /* DIAGRAM COMPONENTS */
+    /* Flowchart Pipeline Diagram */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .flow-step-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-top: 4px solid var(--primary);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .flow-step-num {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    .flow-step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .flow-step-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Curve Chart Visual (Age vs Exposure) */
+    .chart-container {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .curve-bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .curve-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 100px;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .curve-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .curve-track {
+      background: #e2e8f0;
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .curve-fill {
+      height: 100%;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.75rem;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: width 0.6s ease;
+    }
+
+    /* Decision Tree Diagram */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .decision-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .decision-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .decision-branch {
+      background: #f8fafc;
+      border-left: 3px solid var(--accent-gold);
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.85rem;
+    }
+
+    /* Tiered Gauge Scale Diagram (Maintenance Margin) */
+    .gauge-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .gauge-tier {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .tier-safe { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .tier-normal { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .tier-warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .tier-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* Ladder SOP Diagram */
+    .ladder-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .ladder-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+    }
+
+    .ladder-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    /* 4D Matrix Dashboard Grid */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .matrix-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .matrix-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: var(--primary);
+    }
+
     /* Slide Footer Bar */
     .slide-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 1rem;
+      padding-top: 0.85rem;
       border-top: 1px solid var(--border-color);
       font-size: 0.82rem;
       color: var(--text-muted);
@@ -348,17 +520,17 @@
     }
 
     .cover-title {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
     }
 
     .cover-subtitle {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--accent-gold);
       font-weight: 600;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
     .feature-banner {
@@ -369,7 +541,7 @@
       border-radius: 12px;
       font-size: 0.88rem;
       font-weight: 600;
-      margin-top: 1.5rem;
+      margin-top: 1.25rem;
       max-width: 680px;
       line-height: 1.5;
       display: flex;
@@ -408,49 +580,54 @@
     <!-- SLIDE 1: Cover -->
     <div class="slide" id="slide-1">
       <div class="slide-card cover-card">
-        <div class="slide-badge"><i class="fa-solid fa-graduation-cap"></i> YouTube & Podcast 98 集全精華教案</div>
-        <h1 class="cover-title">槓桿人生 Ivan 核心理財簡報</h1>
-        <p class="cover-subtitle">富人花錢三順位 • 買借死金融思維 • 200%+ 質押安全防禦</p>
+        <div class="slide-badge"><i class="fa-solid fa-graduation-cap"></i> YouTube & Podcast 98 集圖解全精華教案</div>
+        <h1 class="cover-title">槓桿人生 Ivan 核心理財簡報 (視覺圖解版)</h1>
+        <p class="cover-subtitle">富人花錢三順位 • 買借死金融圖解 • 200%+ 質押安全防禦</p>
         
         <!-- Callout Banner introducing the Side-Note Feature -->
         <div class="feature-banner">
           <i class="fa-solid fa-lightbulb fa-xl" style="color: var(--accent-gold);"></i>
           <div>
-            <strong>💡 互動提示功能：</strong><br>
-            簡報中標有畫線的專有名詞可點擊查看釋義。你也可以在簡報中<strong>反白框選任意文字</strong>，自動呼叫 AI 釋義並儲存為右側 Side-Note 備註！
+            <strong>💡 互動圖解與備註提示：</strong><br>
+            簡報中標有藍色畫線的名詞可點擊查看釋義。在簡報中<strong>框選任意文字</strong>可呼叫 AI 釋義並儲存為右側 Side-Note 備註，點開備註欄時簡報會自動向左推動避免遮擋！
           </div>
         </div>
 
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1.5rem;">請使用 <kbd>↓</kbd> 方向鍵或下方按鈕切換簡報頁面</p>
-        <div class="slide-footer" style="width:100%; display:flex; justify-content:space-between; margin-top:1.5rem;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1.25rem;">請使用 <kbd>↓</kbd> 方向鍵或下方按鈕切換簡報頁面</p>
+        <div class="slide-footer" style="width:100%; display:flex; justify-content:space-between; margin-top:1.25rem;">
           <span>Designed by Hsuan x her AI bestie</span>
           <span>Slide 1 / 8</span>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 2: 富人思維篇 -->
+    <!-- SLIDE 2: 富人思維篇 (Visual Step Flowchart) -->
     <div class="slide" id="slide-2">
       <div class="slide-card">
         <div>
           <div class="slide-badge"><i class="fa-solid fa-crown"></i> 01. 富人思維與花錢三順位</div>
-          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('買、借、死 (Buy, Borrow, Die)')">買、借、死 (Buy, Borrow, Die)</span> 金融邏輯</h2>
+          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('買、借、死 (Buy, Borrow, Die)')">買、借、死 (Buy, Borrow, Die)</span> 金融資產流向圖解</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-1"></i></div>
-            <div class="point-title">順位一：買入生錢資產</div>
-            <div class="point-desc">將本金投入市值型 ETF (0050/SXR8/QQQ) 或高品質房產，讓資產享受長線資本增值。</div>
+          <div class="flow-grid">
+            <div class="flow-step-card">
+              <span class="flow-step-num">Step 1. 買 (Buy)</span>
+              <div class="flow-step-title">買入生錢資產</div>
+              <div class="flow-step-desc">將本金與薪資投入市值型 ETF (0050/SXR8) 或優質房產，享有長線資本增值且不輕易變賣。</div>
+            </div>
+            <div class="flow-step-card" style="border-top-color: var(--accent-gold);">
+              <span class="flow-step-num" style="background:#fef3c7; color:var(--accent-gold);">Step 2. 借 (Borrow)</span>
+              <div class="flow-step-title">質押開立流動性</div>
+              <div class="flow-step-desc">維持率控管在 200%+，透過低利股票質押套出現金。免賣股、免繳資本利得稅。</div>
+            </div>
+            <div class="flow-step-card" style="border-top-color: var(--accent-green);">
+              <span class="flow-step-num" style="background:#d1fae5; color:var(--accent-green);">Step 3. 傳 (Die/Pass)</span>
+              <div class="flow-step-title">消費或二次再投資</div>
+              <div class="flow-step-desc">用質押借出的極低利資金消費或建倉，資產池持續滾大，財富可世代傳承。</div>
+            </div>
           </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-2"></i></div>
-            <div class="point-title">順位二：利用質押借錢</div>
-            <div class="point-desc">不賣掉下金蛋的資產，而是透過低利質押借出現金。免去資本利得稅與賣股手續費。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-3"></i></div>
-            <div class="point-title">順位三：用借來的錢消費</div>
-            <div class="point-desc">用質押借出的低利資金買車、支付生活費或二次再投資，資產規模持續變大，越借越有錢。</div>
+          <div style="background:#f1f5f9; padding:0.85rem 1.1rem; border-radius:10px; font-size:0.86rem; color:var(--text-main); border-left:4px solid var(--primary);">
+            💡 <strong>圖解心法：</strong>普通人「薪資 ➔ 消費 ➔ 繳稅」；富人「薪資 ➔ 買入資產 ➔ 質押借款 ➔ 消費與再投資」。
           </div>
         </div>
         <div class="slide-footer">
@@ -460,28 +637,44 @@
       </div>
     </div>
 
-    <!-- SLIDE 3: 淨資產與人力資本 -->
+    <!-- SLIDE 3: 淨資產與生命週期曲線圖 -->
     <div id="slide-3" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-wallet"></i> 02. 資產負債表與人力資本</div>
-          <h2 class="slide-title">看 <span class="term-chip" onclick="explainTerm('淨資產 (Net Worth)')">淨資產 (Net Worth)</span>，提早折現人力資本</h2>
+          <div class="slide-badge"><i class="fa-solid fa-wallet"></i> 02. 資產負債表與生命週期槓桿</div>
+          <h2 class="slide-title">看 <span class="term-chip" onclick="explainTerm('淨資產 (Net Worth)')">淨資產 (Net Worth)</span>，年齡與曝險動態曲線</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <div class="point-title">追蹤淨資產成長</div>
-            <div class="point-desc">淨資產 = 總資產 - 總負債。關注總資產累積速度，而非日常流水帳支出。</div>
+          <div class="chart-container">
+            <div style="font-size:0.9rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">
+              <i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> <span class="term-chip" onclick="explainTerm('生命週期投資法 (Lifecycle Investing)')">生命週期投資法</span> 年齡 vs 總曝險目標
+            </div>
+            <div class="curve-bar-group">
+              <div class="curve-row">
+                <div class="curve-label">20 - 35 歲 (本金尚小)</div>
+                <div class="curve-track">
+                  <div class="curve-fill" style="width: 85%; background: linear-gradient(90deg, #3b82f6, #2563eb);">1.5x - 2.0x 槓桿曝險</div>
+                </div>
+                <div style="font-size:0.78rem; color:var(--accent-gold); font-weight:700;">人力資本折現</div>
+              </div>
+              <div class="curve-row">
+                <div class="curve-label">35 - 50 歲 (資產黃金期)</div>
+                <div class="curve-track">
+                  <div class="curve-fill" style="width: 65%; background: linear-gradient(90deg, #10b981, #059669);">1.2x - 1.5x 目標區間</div>
+                </div>
+                <div style="font-size:0.78rem; color:var(--accent-green); font-weight:700;">黃金風控期</div>
+              </div>
+              <div class="curve-row">
+                <div class="curve-label">50+ 歲 (資產龐大期)</div>
+                <div class="curve-track">
+                  <div class="curve-fill" style="width: 45%; background: linear-gradient(90deg, #f59e0b, #d97706);">1.0x - 0.8x 保守防守</div>
+                </div>
+                <div style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">降槓桿防守</div>
+              </div>
+            </div>
           </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-briefcase"></i></div>
-            <div class="point-title">人力資本折現</div>
-            <div class="point-desc">年輕人的最大資產是未來 30 年的薪資收入。適度舉債等於提早將人力資本轉換為金融資產。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-hourglass-half"></i></div>
-            <div class="point-title"><span class="term-chip" onclick="explainTerm('生命週期投資法 (Lifecycle Investing)')">生命週期投資法</span></div>
-            <div class="point-desc">年輕本金小時開槓桿放大市場曝險；隨年紀增長與本金變大，逐漸降低槓桿比例。</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); background:#ffffff; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px;">
+            <code>淨資產 (Net Worth) = 總資產 (股票+現金+房產) - 總負債 (信貸+質押)</code>。年輕時本金小，適度舉債等於提早將未來薪資轉換為金融資產。
           </div>
         </div>
         <div class="slide-footer">
@@ -491,39 +684,41 @@
       </div>
     </div>
 
-    <!-- SLIDE 4: 借貸工具矩陣 -->
+    <!-- SLIDE 4: 借貸選擇心智決策樹 -->
     <div id="slide-4" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-building-columns"></i> 03. 借貸工具大比較</div>
-          <h2 class="slide-title">信貸 vs 股票質押 選擇對照</h2>
+          <div class="slide-badge"><i class="fa-solid fa-diagram-project"></i> 03. 借貸工具選擇對照</div>
+          <h2 class="slide-title">信貸 vs 股票質押 心智決策樹</h2>
         </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:1rem; font-size:0.9rem;">
-          <thead>
-            <tr style="background:#f1f5f9; text-align:left;">
-              <th style="padding:0.75rem; border:1px solid #e2e8f0;">比較項目</th>
-              <th style="padding:0.75rem; border:1px solid #e2e8f0;">個人信用貸款 (信貸)</th>
-              <th style="padding:0.75rem; border:1px solid #e2e8f0;">股票質押貸款 (質押)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">前提條件</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">工作收入與信用評分</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">現有股票資產庫存</td>
-            </tr>
-            <tr>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">還款機制</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">按月本息攤還 (7 年期)</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">只繳利息，到期展延</td>
-            </tr>
-            <tr>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">購屋影響</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">月還款納入收支比 (<span class="term-chip" onclick="explainTerm('DBR 22 倍規範')">DBR 22</span>)，可能影響房貸</td>
-              <td style="padding:0.65rem; border:1px solid #e2e8f0;">有擔保借款，依各銀行授信評估</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="slide-content">
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-header"><i class="fa-solid fa-credit-card"></i> 個人信用貸款 (信貸)</div>
+              <div class="decision-branch">
+                <strong>適合對象：</strong>無股票庫存、需開立初始投資資金者。
+              </div>
+              <div class="decision-branch">
+                <strong>還款機制：</strong>按月本息攤還 (7 年期)。
+              </div>
+              <div class="decision-branch" style="border-left-color:var(--accent-red);">
+                <strong>房貸評估提醒：</strong>月還款金納入收支比 (<span class="term-chip" onclick="explainTerm('DBR 22 倍規範')">DBR 22</span>)，可能影響未來房貸額度。
+              </div>
+            </div>
+            <div class="decision-card">
+              <div class="decision-header" style="color:var(--accent-gold);"><i class="fa-solid fa-piggy-bank"></i> 股票質押貸款 (質押)</div>
+              <div class="decision-branch" style="border-left-color:var(--accent-green);">
+                <strong>適合對象：</strong>已有市值型股票庫存者。
+              </div>
+              <div class="decision-branch" style="border-left-color:var(--accent-green);">
+                <strong>還款機制：</strong>只繳利息，本金到期續約展延。
+              </div>
+              <div class="decision-branch">
+                <strong>風控要求：</strong>需隨時維持 <span class="term-chip" onclick="explainTerm('股票質押維持率 (Maintenance Margin)')">維持率 200%+</span>，防範斷頭追繳。
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="slide-footer">
           <span>Designed by Hsuan x her AI bestie</span>
           <span>Slide 4 / 8</span>
@@ -531,28 +726,34 @@
       </div>
     </div>
 
-    <!-- SLIDE 5: 質押維持率風控 -->
+    <!-- SLIDE 5: 質押維持率風控氣壓計 -->
     <div id="slide-5" class="slide">
       <div class="slide-card">
         <div>
           <div class="slide-badge"><i class="fa-solid fa-shield-halved"></i> 04. 質押維持率風控</div>
-          <h2 class="slide-title">200%+ <span class="term-chip" onclick="explainTerm('股票質押維持率 (Maintenance Margin)')">質押維持率</span> 靜態防禦算式</h2>
+          <h2 class="slide-title">200%+ <span class="term-chip" onclick="explainTerm('股票質押維持率 (Maintenance Margin)')">維持率</span> 靜態防禦氣壓計</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-calculator"></i></div>
-            <div class="point-title">維持率算式</div>
-            <div class="point-desc"><code>維持率 = 設質擔保品市值 ÷ 借款金額 × 100%</code><br>當設質 300 萬借款 100 萬，維持率為 300%。</div>
+          <div class="gauge-scale">
+            <div class="gauge-tier tier-safe">
+              <span>🟢 維持率 > 300% (極充裕防禦區)</span>
+              <span>擔保品可承受跌幅 -56.7%+</span>
+            </div>
+            <div class="gauge-tier tier-normal">
+              <span>🔵 維持率 200% - 300% (安全建議區)</span>
+              <span>靜態可承受跌幅 -35% 至 -50%</span>
+            </div>
+            <div class="gauge-tier tier-warn">
+              <span>🟡 維持率 150% - 200% (警戒提示區)</span>
+              <span>需預留未質押資產備用</span>
+            </div>
+            <div class="gauge-tier tier-danger">
+              <span>🔴 維持率 < <span class="term-chip" onclick="explainTerm('130% 追繳門檻 (Margin Call)')">130% 法定追繳線</span></span>
+              <span>券商發出補繳通知 (2天內需補繳)</span>
+            </div>
           </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <div class="point-title"><span class="term-chip" onclick="explainTerm('130% 追繳門檻 (Margin Call)')">130% 追繳門檻</span></div>
-            <div class="point-desc">法定追繳參考線為 130%。低於 130% 時券商發出補繳通知，未補繳將被處分股票。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-shield"></i></div>
-            <div class="point-title">靜態跌幅防禦</div>
-            <div class="point-desc">維持率 300% 時，擔保品靜態可承受 <strong>56.7%</strong> 跌幅才會觸及 130% 追繳線。</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); background:#f8fafc; padding:0.75rem 1rem; border-radius:10px; border:1px solid var(--border-color);">
+            <code>維持率試算 = 實際設質擔保品市值 ÷ 質押借款金額 × 100%</code>。靜態跌幅計算式：<code>1 - (130% ÷ 當前維持率)</code>。實際條款以各券商契約為準。
           </div>
         </div>
         <div class="slide-footer">
@@ -562,28 +763,30 @@
       </div>
     </div>
 
-    <!-- SLIDE 6: 正二 ETF 核心心法 -->
+    <!-- SLIDE 6: 正二槓桿雙情境對比圖 -->
     <div id="slide-6" class="slide">
       <div class="slide-card">
         <div>
           <div class="slide-badge"><i class="fa-solid fa-bolt"></i> 05. 槓桿 ETF 實戰</div>
-          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('正二槓桿 ETF (00631L / LQQ)')">正二 (00631L/LQQ)</span> 波動衰減與曝險</h2>
+          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('正二槓桿 ETF (00631L / LQQ)')">正二 (00631L/LQQ)</span> 雙情境對比與曝險算式</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-chart-area"></i></div>
-            <div class="point-title">單日 2 倍追蹤與複利</div>
-            <div class="point-desc">正二追蹤標的單日 2 倍指數。在長線單邊多頭時，複利效應會使總報酬超越 2 倍。</div>
+          <div class="decision-grid">
+            <div class="decision-card" style="border-top:4px solid var(--accent-green);">
+              <div class="decision-header" style="color:var(--accent-green);"><i class="fa-solid fa-arrow-trend-up"></i> 單邊多頭市場 (超額複利)</div>
+              <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                正二追蹤標的單日 2 倍報酬。在強勁單邊多頭趨勢中，複利效應會使總報酬超越 2 倍！
+              </p>
+            </div>
+            <div class="decision-card" style="border-top:4px solid var(--accent-red);">
+              <div class="decision-header" style="color:var(--accent-red);"><i class="fa-solid fa-arrows-spin"></i> 震盪盤整市場 (<span class="term-chip" onclick="explainTerm('波動衰減 (Volatility Decay)')">波動衰減</span>)</div>
+              <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                證交所警示：在盤整震盪時，每日再平衡機制會產生**波動耗損 (Decay)** 與轉倉價差成本，不宜視為無風險工具。
+              </p>
+            </div>
           </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-arrows-spin"></i></div>
-            <div class="point-title"><span class="term-chip" onclick="explainTerm('波動衰減 (Volatility Decay)')">波動衰減風險</span></div>
-            <div class="point-desc">證交所提醒：在震盪盤整市場中，每日再平衡會產生波動耗損，不宜視為無風險長期工具。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-scale-balanced"></i></div>
-            <div class="point-title">總股票曝險控制</div>
-            <div class="point-desc"><code>總曝險 = 1x股票 + (正二股票×2)</code><br>建議總槓桿曝險控制在 <strong>1.2x 至 1.5x 淨資產</strong>。</div>
+          <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:0.85rem 1.1rem; border-radius:12px; font-size:0.88rem; color:#1e40af;">
+            <strong>總曝險疊加算式：</strong><code>總股票曝險 = 1x原型股票 + (2x正二股票 × 2)</code>，建議總槓桿曝險控制在 <strong>1.2x 至 1.5x 淨資產</strong> 區間。
           </div>
         </div>
         <div class="slide-footer">
@@ -593,28 +796,36 @@
       </div>
     </div>
 
-    <!-- SLIDE 7: 崩盤防禦 SOP -->
+    <!-- SLIDE 7: 崩盤 3 階段梯形 SOP -->
     <div id="slide-7" class="slide">
       <div class="slide-card">
         <div>
           <div class="slide-badge"><i class="fa-solid fa-truck-medical"></i> 06. 崩盤防禦 SOP</div>
-          <h2 class="slide-title">大盤回檔與分批加碼條件</h2>
+          <h2 class="slide-title">大盤回檔 3 階段梯形加碼 SOP</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-hand"></i></div>
-            <div class="point-title">不恐慌出清核心庫存</div>
-            <div class="point-desc">核心市值型 ETF 在恐慌時不出清，確保維持率遠高於安全線。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-layer-group"></i></div>
-            <div class="point-title">回檔分批動用預備金</div>
-            <div class="point-desc">當大盤回檔 15% 至 20% 時，開啟預留質押/信貸額度分批建倉正二。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-water"></i></div>
-            <div class="point-title"><span class="term-chip" onclick="explainTerm('60MA 季線趨勢驗證')">60MA 季線驗證</span></div>
-            <div class="point-desc">觀察標的重回 60 日季線，確認大盤中長線趨勢修復。</div>
+          <div class="ladder-grid">
+            <div class="ladder-step">
+              <div class="ladder-badge">1</div>
+              <div>
+                <strong style="font-size:0.95rem; color:var(--text-main);">階段 1：大盤回檔 15% (試探性建倉)</strong>
+                <p style="font-size:0.84rem; color:var(--text-muted);">開啟 30% 預留質押/信貸額度，分批建倉原型或正二。</p>
+              </div>
+            </div>
+            <div class="ladder-step" style="border-left: 4px solid var(--accent-gold);">
+              <div class="ladder-badge" style="background:#fef3c7; color:var(--accent-gold);">2</div>
+              <div>
+                <strong style="font-size:0.95rem; color:var(--text-main);">階段 2：大盤回檔 20% (加力建倉)</strong>
+                <p style="font-size:0.84rem; color:var(--text-muted);">開啟 60% 預留額度加碼正二，維持率需持續高於 200%。</p>
+              </div>
+            </div>
+            <div class="ladder-step" style="border-left: 4px solid var(--accent-green);">
+              <div class="ladder-badge" style="background:#d1fae5; color:var(--accent-green);">3</div>
+              <div>
+                <strong style="font-size:0.95rem; color:var(--text-main);">階段 3：重回 <span class="term-chip" onclick="explainTerm('60MA 季線趨勢驗證')">60MA 季線</span> (趨勢修復)</strong>
+                <p style="font-size:0.84rem; color:var(--text-muted);">觀察指數站回 60 日季線，確認趨勢穩定後回歸常態配置。</p>
+              </div>
+            </div>
           </div>
         </div>
         <div class="slide-footer">
@@ -624,28 +835,35 @@
       </div>
     </div>
 
-    <!-- SLIDE 8: 總結 -->
+    <!-- SLIDE 8: 四維風控儀表板 -->
     <div id="slide-8" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> 07. 槓桿人生心法總結</div>
-          <h2 class="slide-title">風控優先，複利永續</h2>
+          <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> 07. 風控總結儀表板</div>
+          <h2 class="slide-title">槓桿人生四維風控矩陣</h2>
         </div>
         <div class="slide-content">
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-gem"></i></div>
-            <div class="point-title">專注淨資產增長</div>
-            <div class="point-desc">擺脫流水帳心態，持續將工具轉換為優質生錢資產。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-shield-cat"></i></div>
-            <div class="point-title">質押維持率充裕</div>
-            <div class="point-desc">成數控制在 30%-40%，維持率保持 200%+，預留足夠防禦空間。</div>
-          </div>
-          <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-sliders"></i></div>
-            <div class="point-title">動態曝險控管</div>
-            <div class="point-desc">掌握 1.2x 至 1.5x 等效曝險，兼顧長線複利增益與部位安全。</div>
+          <div class="matrix-grid">
+            <div class="matrix-card">
+              <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">維度一：資產指標</span>
+              <div class="matrix-num">淨資產增長</div>
+              <p style="font-size:0.84rem; color:var(--text-main);">關注淨資產膨脹速度而非流水帳支出。</p>
+            </div>
+            <div class="matrix-card">
+              <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">維度二：曝險控制</span>
+              <div class="matrix-num" style="color:var(--accent-gold);">1.2x - 1.5x</div>
+              <p style="font-size:0.84rem; color:var(--text-main);">包含原型與正二 2x 疊加之總股票曝險。</p>
+            </div>
+            <div class="matrix-card">
+              <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">維度三：維持率防線</span>
+              <div class="matrix-num" style="color:var(--accent-green);">200% +</div>
+              <p style="font-size:0.84rem; color:var(--text-main);">僅以實際設質擔保品估算，維持率充裕。</p>
+            </div>
+            <div class="matrix-card">
+              <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">維度四：流動性安全墊</span>
+              <div class="matrix-num" style="color:#0284c7;">6-12 個月</div>
+              <p style="font-size:0.84rem; color:var(--text-main);">預留緊急備用金與未質押額度防斷頭。</p>
+            </div>
           </div>
         </div>
         <div class="slide-footer">
