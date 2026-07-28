@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>槓桿人生 Ivan 全系列精華簡報 (8大核心教案)</title>
+  <title>槓桿人生 8 大主題精華簡報 (PPT 筆記與 AI 釋義版)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -58,20 +58,19 @@
       border-radius: 20px;
       width: 100%;
       max-width: 980px;
-      min-height: 580px;
-      padding: 2.5rem;
-      box-shadow: var(--shadow);
+      height: 82vh;
+      padding: 2.25rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-shadow: var(--shadow);
       position: relative;
-      overflow: hidden;
     }
 
     .slide-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       background: var(--primary-light);
       color: var(--primary);
       padding: 0.35rem 0.85rem;
@@ -97,6 +96,7 @@
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.25rem;
       align-items: start;
+      overflow-y: auto;
     }
 
     .point-box {
@@ -119,8 +119,8 @@
     }
 
     .point-title {
-      font-size: 1.05rem;
       font-weight: 700;
+      font-size: 1.05rem;
       margin-bottom: 0.4rem;
       color: var(--text-main);
     }
@@ -131,32 +131,29 @@
       line-height: 1.55;
     }
 
-    /* Comparison Table Style */
-    .slide-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.5rem;
-      font-size: 0.88rem;
+    /* Term Chips (Clickable for AI Explanation) */
+    .term-chip {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-bottom: 2px dotted #0284c7;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
-    .slide-table th, .slide-table td {
-      border: 1px solid var(--border-color);
-      padding: 0.75rem;
-      text-align: left;
+    .term-chip:hover {
+      background: #0284c7;
+      color: white;
     }
 
-    .slide-table th {
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 700;
-    }
-
+    /* Slide Footer Bar */
     .slide-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1.5rem;
-      padding-top: 0.85rem;
+      padding-top: 1rem;
       border-top: 1px solid var(--border-color);
       font-size: 0.82rem;
       color: var(--text-muted);
@@ -194,12 +191,147 @@
       border-color: var(--primary);
     }
 
+    /* Floating Toggle Button for Notes Drawer */
+    .btn-notes-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      z-index: 200;
+      transition: all 0.2s;
+    }
+
+    .btn-notes-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Side Notes Drawer Panel */
+    .notes-drawer {
+      position: fixed;
+      top: 0;
+      right: -360px;
+      width: 350px;
+      height: 100vh;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border-color);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .notes-drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-color);
+    }
+
+    .drawer-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .drawer-content {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .note-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .note-term {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .note-desc {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .note-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .btn-del-note {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-del-note:hover {
+      color: var(--accent-red);
+    }
+
+    /* Floating Text Selection Popover Button */
+    .selection-popover {
+      position: absolute;
+      background: var(--text-main);
+      color: white;
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      z-index: 250;
+      transform: translate(-50%, -100%);
+      margin-top: -8px;
+    }
+
+    .selection-popover:hover {
+      background: var(--primary);
+    }
+
     /* Cover Slide Specifics */
     .cover-card {
       text-align: center;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
     }
 
     .cover-title {
@@ -213,11 +345,50 @@
       font-size: 1.2rem;
       color: var(--accent-gold);
       font-weight: 600;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 0.85rem 1.35rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      max-width: 680px;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-align: left;
     }
   </style>
 </head>
 <body>
+
+  <!-- Floating Toggle Button for Notes Drawer -->
+  <button class="btn-notes-toggle" onclick="toggleDrawer()">
+    <i class="fa-solid fa-note-sticky" style="color: var(--accent-gold);"></i> 
+    <span>Side-Note 筆記 (<span id="note-count">0</span>)</span>
+  </button>
+
+  <!-- Side Notes Drawer Panel -->
+  <div class="notes-drawer" id="notes-drawer">
+    <div class="drawer-header">
+      <h3><i class="fa-solid fa-bookmark" style="color: var(--primary);"></i> 我的專有名詞 Side-Notes</h3>
+      <button style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;" onclick="toggleDrawer()">&times;</button>
+    </div>
+    <div class="drawer-content" id="drawer-content">
+      <!-- Notes injected by JS -->
+    </div>
+  </div>
+
+  <!-- Text Selection Popover -->
+  <div class="selection-popover" id="selection-popover" onclick="askAiForSelectedText()">
+    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-gold);"></i> 問 AI 釋義並記為 Side-Note
+  </div>
 
   <div class="deck-container" id="deck">
 
@@ -227,7 +398,17 @@
         <div class="slide-badge"><i class="fa-solid fa-graduation-cap"></i> YouTube & Podcast 98 集全精華教案</div>
         <h1 class="cover-title">槓桿人生 Ivan 核心理財簡報</h1>
         <p class="cover-subtitle">富人花錢三順位 • 買借死金融思維 • 200%+ 質押安全防禦</p>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">請使用 <kbd>↓</kbd> 方向鍵或下方按鈕切換簡報頁面</p>
+        
+        <!-- Callout Banner introducing the Side-Note Feature -->
+        <div class="feature-banner">
+          <i class="fa-solid fa-lightbulb fa-xl" style="color: var(--accent-gold);"></i>
+          <div>
+            <strong>💡 互動提示功能：</strong><br>
+            簡報中標有畫線的專有名詞可點擊查看釋義。你也可以在簡報中<strong>反白框選任意文字</strong>，自動呼叫 AI 釋義並儲存為右側 Side-Note 備註！
+          </div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1.5rem;">請使用 <kbd>↓</kbd> 方向鍵或下方按鈕切換簡報頁面</p>
         <div class="slide-footer" style="width:100%; display:flex; justify-content:space-between; margin-top:1.5rem;">
           <span>Designed by Hsuan x her AI bestie</span>
           <span>Slide 1 / 8</span>
@@ -235,12 +416,12 @@
       </div>
     </div>
 
-    <!-- SLIDE 2: 富人思維篇 (EP25/27/30 精華) -->
+    <!-- SLIDE 2: 富人思維篇 -->
     <div class="slide" id="slide-2">
       <div class="slide-card">
         <div>
           <div class="slide-badge"><i class="fa-solid fa-crown"></i> 01. 富人思維與花錢三順位</div>
-          <h2 class="slide-title">買、借、死 (Buy, Borrow, Die) 金融邏輯</h2>
+          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('買、借、死 (Buy, Borrow, Die)')">買、借、死 (Buy, Borrow, Die)</span> 金融邏輯</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
@@ -266,28 +447,28 @@
       </div>
     </div>
 
-    <!-- SLIDE 3: 觀念篇 (EP11/16/38/39 精華) -->
-    <div class="slide" id="slide-3">
+    <!-- SLIDE 3: 淨資產與人力資本 -->
+    <div id="slide-3" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-hourglass-half"></i> 02. 人力資本與生命週期投資法</div>
-          <h2 class="slide-title">本金少更該合理開槓桿</h2>
+          <div class="slide-badge"><i class="fa-solid fa-wallet"></i> 02. 資產負債表與人力資本</div>
+          <h2 class="slide-title">看 <span class="term-chip" onclick="explainTerm('淨資產 (Net Worth)')">淨資產 (Net Worth)</span>，提早折現人力資本</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-user-gear"></i></div>
-            <div class="point-title">未來人力資本折現</div>
-            <div class="point-desc">年輕最大的優勢是未來數十年的薪資流。合理槓桿是把「未來薪資」提前借到「現在」投入複利。</div>
+            <div class="point-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="point-title">追蹤淨資產成長</div>
+            <div class="point-desc">淨資產 = 總資產 - 總負債。關注總資產累積速度，而非日常流水帳支出。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-scale-balanced"></i></div>
-            <div class="point-title">時間平滑化曝險</div>
-            <div class="point-desc">定期定額後期本金過大，單次崩盤損失慘重。生命週期投資法主張初期高曝險 (1.5x~2x)，資產變大後漸進調降。</div>
+            <div class="point-icon"><i class="fa-solid fa-briefcase"></i></div>
+            <div class="point-title">人力資本折現</div>
+            <div class="point-desc">年輕人的最大資產是未來 30 年的薪資收入。適度舉債等於提早將人力資本轉換為金融資產。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-xmark"></i></div>
-            <div class="point-title">拒絕高股息假安全感</div>
-            <div class="point-desc">高股息配息是左手換右手，還要扣稅。資產翻倍必須以市值型 ETF 為唯一核心滾雪球。</div>
+            <div class="point-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="point-title"><span class="term-chip" onclick="explainTerm('生命週期投資法 (Lifecycle Investing)')">生命週期投資法</span></div>
+            <div class="point-desc">年輕本金小時開槓桿放大市場曝險；隨年紀增長與本金變大，逐漸降低槓桿比例。</div>
           </div>
         </div>
         <div class="slide-footer">
@@ -297,46 +478,36 @@
       </div>
     </div>
 
-    <!-- SLIDE 4: 工具矩陣 (EP10/14/29/33 精華) -->
-    <div class="slide" id="slide-4">
+    <!-- SLIDE 4: 借貸工具矩陣 -->
+    <div id="slide-4" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-building-columns"></i> 03. 借貸工具大決策矩陣</div>
-          <h2 class="slide-title">信貸 vs 質押 vs 理財型房貸</h2>
+          <div class="slide-badge"><i class="fa-solid fa-building-columns"></i> 03. 借貸工具大比較</div>
+          <h2 class="slide-title">信貸 vs 股票質押 選擇對照</h2>
         </div>
-        <table class="slide-table">
+        <table style="width:100%; border-collapse:collapse; margin-bottom:1rem; font-size:0.9rem;">
           <thead>
-            <tr>
-              <th>維度</th>
-              <th>個人信用貸款</th>
-              <th>股票質押貸款</th>
-              <th>理財型/一般房貸 (EP33)</th>
+            <tr style="background:#f1f5f9; text-align:left;">
+              <th style="padding:0.75rem; border:1px solid #e2e8f0;">比較項目</th>
+              <th style="padding:0.75rem; border:1px solid #e2e8f0;">個人信用貸款 (信貸)</th>
+              <th style="padding:0.75rem; border:1px solid #e2e8f0;">股票質押貸款 (質押)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>資金門檻</strong></td>
-              <td>無資產門檻 (看工作收入)</td>
-              <td>須現有股票庫存</td>
-              <td>須現有房產增貸/理財型</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">前提條件</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">工作收入與信用評分</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">現有股票資產庫存</td>
             </tr>
             <tr>
-              <td><strong>還款壓力</strong></td>
-              <td>按月本息攤還 (7年期)</td>
-              <td>只繳利息，本金續約展延</td>
-              <td>隨借隨還或長年期攤還</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">還款機制</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">按月本息攤還 (7 年期)</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">只繳利息，到期展延</td>
             </tr>
             <tr>
-              <td><strong>買房額度扣減</strong></td>
-              <td><strong>嚴重扣減房貸額度 (DBR22倍)</strong></td>
-              <td>影響極小，可隨時解質</td>
-              <td>已是房貸系統內部調度</td>
-            </tr>
-            <tr>
-              <td><strong>斷頭風險</strong></td>
-              <td>無維持率追繳風險</td>
-              <td>維持率低於 130% 需追繳</td>
-              <td>無質押斷頭維持率壓力</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0; font-weight:700;">購屋影響</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">月還款納入收支比 (<span class="term-chip" onclick="explainTerm('DBR 22 倍規範')">DBR 22</span>)，可能影響房貸</td>
+              <td style="padding:0.65rem; border:1px solid #e2e8f0;">有擔保借款，依各銀行授信評估</td>
             </tr>
           </tbody>
         </table>
@@ -347,28 +518,28 @@
       </div>
     </div>
 
-    <!-- SLIDE 5: 質押實操 (EP9/13/25/35 精華) -->
-    <div class="slide" id="slide-5">
+    <!-- SLIDE 5: 質押維持率風控 -->
+    <div id="slide-5" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-coins"></i> 04. 股票質押完全實操指南</div>
-          <h2 class="slide-title">30%~40% 成數與續約展延 SOP</h2>
+          <div class="slide-badge"><i class="fa-solid fa-shield-halved"></i> 04. 質押維持率風控</div>
+          <h2 class="slide-title">200%+ <span class="term-chip" onclick="explainTerm('股票質押維持率 (Maintenance Margin)')">質押維持率</span> 靜態防禦算式</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-percent"></i></div>
-            <div class="point-title">控管成數於 30%~40%</div>
-            <div class="point-desc">券商最高雖可借 60%，但嚴禁借滿！質押成數保持在 30%~40%，維持率可輕鬆維持在 250%~300% 以上。</div>
+            <div class="point-icon"><i class="fa-solid fa-calculator"></i></div>
+            <div class="point-title">維持率算式</div>
+            <div class="point-desc"><code>維持率 = 設質擔保品市值 ÷ 借款金額 × 100%</code><br>當設質 300 萬借款 100 萬，維持率為 300%。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-calendar-check"></i></div>
-            <div class="point-title">一年展延續約</div>
-            <div class="point-desc">質押期限通常為 1 年，到期付清利息即可開展新合約。若股票上漲，還能透過「增額質押」借出更多資金。</div>
+            <div class="point-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="point-title"><span class="term-chip" onclick="explainTerm('130% 追繳門檻 (Margin Call)')">130% 追繳門檻</span></div>
+            <div class="point-desc">法定追繳參考線為 130%。低於 130% 時券商發出補繳通知，未補繳將被處分股票。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-piggy-bank"></i></div>
-            <div class="point-title">股息付利息零負擔</div>
-            <div class="point-desc">0050 或 QQQ 的長線配息與上漲利差足以覆蓋 2.x% 的質押利息，實現完全無痛現金流。</div>
+            <div class="point-icon"><i class="fa-solid fa-shield"></i></div>
+            <div class="point-title">靜態跌幅防禦</div>
+            <div class="point-desc">維持率 300% 時，擔保品靜態可承受 <strong>56.7%</strong> 跌幅才會觸及 130% 追繳線。</div>
           </div>
         </div>
         <div class="slide-footer">
@@ -378,28 +549,28 @@
       </div>
     </div>
 
-    <!-- SLIDE 6: 風控護城河 (EP22/29/35/55 精華) -->
-    <div class="slide" id="slide-6">
+    <!-- SLIDE 6: 正二 ETF 核心心法 -->
+    <div id="slide-6" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-shield-halved"></i> 05. 4 大防禦機制與維持率公式</div>
-          <h2 class="slide-title">耐受大盤崩盤 50%+ 的不敗算式</h2>
+          <div class="slide-badge"><i class="fa-solid fa-bolt"></i> 05. 槓桿 ETF 實戰</div>
+          <h2 class="slide-title"><span class="term-chip" onclick="explainTerm('正二槓桿 ETF (00631L / LQQ)')">正二 (00631L/LQQ)</span> 波動衰減與曝險</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-calculator"></i></div>
-            <div class="point-title">維持率算式</div>
-            <div class="point-desc"><code>維持率 = (股票總市值 / 借款總額) × 100%</code><br>當維持率 = 300% 時，大盤需跌超過 <strong>56.6%</strong> 才會碰觸 130% 追繳線。</div>
+            <div class="point-icon"><i class="fa-solid fa-chart-area"></i></div>
+            <div class="point-title">單日 2 倍追蹤與複利</div>
+            <div class="point-desc">正二追蹤標的單日 2 倍指數。在長線單邊多頭時，複利效應會使總報酬超越 2 倍。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-vault"></i></div>
-            <div class="point-title">流動性水庫 (EP29)</div>
-            <div class="point-desc">壓垮人的不是負債，而是手邊沒現金！保留 6-12 個月緊急預備金或未質押股票作為安全墊。</div>
+            <div class="point-icon"><i class="fa-solid fa-arrows-spin"></i></div>
+            <div class="point-title"><span class="term-chip" onclick="explainTerm('波動衰減 (Volatility Decay)')">波動衰減風險</span></div>
+            <div class="point-desc">證交所提醒：在震盪盤整市場中，每日再平衡會產生波動耗損，不宜視為無風險長期工具。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-user-shield"></i></div>
-            <div class="point-title">4 大防禦 SOP</div>
-            <div class="point-desc">1. 低質押成數 2. 留存流動預備金 3. 房貸/信貸本息負擔比 &lt; 30% 4. 股災絕不停損核心部位。</div>
+            <div class="point-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <div class="point-title">總股票曝險控制</div>
+            <div class="point-desc"><code>總曝險 = 1x股票 + (正二股票×2)</code><br>建議總槓桿曝險控制在 <strong>1.2x 至 1.5x 淨資產</strong>。</div>
           </div>
         </div>
         <div class="slide-footer">
@@ -409,28 +580,28 @@
       </div>
     </div>
 
-    <!-- SLIDE 7: 正二與曝險 (EP8/12/18/45 精華) -->
-    <div class="slide" id="slide-7">
+    <!-- SLIDE 7: 崩盤防禦 SOP -->
+    <div id="slide-7" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-rocket"></i> 06. 正二 (00631L/LQQ) 1.2x~1.5x 配置</div>
-          <h2 class="slide-title">波幅耗損控管與動態加碼 SOP</h2>
+          <div class="slide-badge"><i class="fa-solid fa-truck-medical"></i> 06. 崩盤防禦 SOP</div>
+          <h2 class="slide-title">大盤回檔與分批加碼條件</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-chart-pie"></i></div>
-            <div class="point-title">1.2x ~ 1.5x 等效曝險</div>
-            <div class="point-desc">正二 (00631L/LQQ) 能在長線多頭創造複利。搭配 0050 組成 1.2x~1.5x 總曝險，兼具攻守。</div>
+            <div class="point-icon"><i class="fa-solid fa-hand"></i></div>
+            <div class="point-title">不恐慌出清核心庫存</div>
+            <div class="point-desc">核心市值型 ETF 在恐慌時不出清，確保維持率遠高於安全線。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
-            <div class="point-title">大盤崩盤 20% 加碼</div>
-            <div class="point-desc">當大盤回檔 15%~20% 時，開啟預留質押/信貸分批加碼正二；站回 60MA 季線確認趨勢回升。</div>
+            <div class="point-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="point-title">回檔分批動用預備金</div>
+            <div class="point-desc">當大盤回檔 15% 至 20% 時，開啟預留質押/信貸額度分批建倉正二。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-gauge-high"></i></div>
-            <div class="point-title">動態調降曝險 (EP55)</div>
-            <div class="point-desc">當大盤創歷史高檔且過熱時，將總曝險適度調降至 1.0x~1.2x，落袋部分資金作為崩盤子彈。</div>
+            <div class="point-icon"><i class="fa-solid fa-water"></i></div>
+            <div class="point-title"><span class="term-chip" onclick="explainTerm('60MA 季線趨勢驗證')">60MA 季線驗證</span></div>
+            <div class="point-desc">觀察標的重回 60 日季線，確認大盤中長線趨勢修復。</div>
           </div>
         </div>
         <div class="slide-footer">
@@ -440,28 +611,28 @@
       </div>
     </div>
 
-    <!-- SLIDE 8: 實踐三階段 (EP31 精華) -->
-    <div class="slide" id="slide-8">
+    <!-- SLIDE 8: 總結 -->
+    <div id="slide-8" class="slide">
       <div class="slide-card">
         <div>
-          <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> 07. 三階段退休落地策略</div>
-          <h2 class="slide-title">從資產累積到終身現金流實務</h2>
+          <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> 07. 槓桿人生心法總結</div>
+          <h2 class="slide-title">風控優先，複利永續</h2>
         </div>
         <div class="slide-content">
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-seedling"></i></div>
-            <div class="point-title">第一階段：累積期 (20-35歲)</div>
-            <div class="point-desc">利用低利信貸與正二拉高曝險至 1.5x~2.0x，快速累積第一桶金與股票在庫庫存。</div>
+            <div class="point-icon"><i class="fa-solid fa-gem"></i></div>
+            <div class="point-title">專注淨資產增長</div>
+            <div class="point-desc">擺脫流水帳心態，持續將工具轉換為優質生錢資產。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-tree"></i></div>
-            <div class="point-title">第二階段：擴張期 (35-50歲)</div>
-            <div class="point-desc">引入股票質押或理財型房貸，將曝險收斂至 1.2x~1.4x，兼顧家庭現金流與極高維持率。</div>
+            <div class="point-icon"><i class="fa-solid fa-shield-cat"></i></div>
+            <div class="point-title">質押維持率充裕</div>
+            <div class="point-desc">成數控制在 30%-40%，維持率保持 200%+，預留足夠防禦空間。</div>
           </div>
           <div class="point-box">
-            <div class="point-icon"><i class="fa-solid fa-mountain-sun"></i></div>
-            <div class="point-title">第三階段：退休期 (50歲+)</div>
-            <div class="point-desc">曝險降至 1.0x，靠股票質押小額取現支付生活費。資產傳承無資本利得稅負擔。</div>
+            <div class="point-icon"><i class="fa-solid fa-sliders"></i></div>
+            <div class="point-title">動態曝險控管</div>
+            <div class="point-desc">掌握 1.2x 至 1.5x 等效曝險，兼顧長線複利增益與部位安全。</div>
           </div>
         </div>
         <div class="slide-footer">
@@ -483,6 +654,19 @@
     let currentIdx = 1;
     const totalSlides = 8;
 
+    // Presets for specialized terms
+    const termDict = {
+      "買、借、死 (Buy, Borrow, Die)": "美國富豪常見的金融節稅與資產滾雪球策略：長抱優質資產 (Buy) 不賣出，急需資金時透過低利質押借款 (Borrow) 支應消費，免去資本利得稅，直到過世後傳承給下一代 (Die)。",
+      "淨資產 (Net Worth)": "個人或家庭真正的財務實力指標。算式：`淨資產 = 總資產 (股票+現金+房產) - 總負債 (信貸+質押+房貸)`。理財的核心目標是擴張淨資產而非單看薪水流水帳。",
+      "生命週期投資法 (Lifecycle Investing)": "由耶魯大學教授提出：年輕時金融本金較小，適度使用槓桿放大股票曝險，讓未來薪資 (人力資本) 提早參與市場複利；年長時本金變大，逐步降槓桿以控管絕對風險。",
+      "DBR 22 倍規範": "金管會規定全體金融機構無擔保債務 (信貸、信用卡循環) 總餘額，不宜超過借款人月收入的 22 倍。信貸月還款金會納入銀行收支比評估，可能影響未來購屋房貸額度。",
+      "股票質押維持率 (Maintenance Margin)": "券商評估質押借款安全的指標。算式：\`維持率 = (設質擔保品股票市值 / 借款金額) × 100%\`。證券法規定追繳線通常為 130%，低於該線會收到補繳通知。",
+      "130% 追繳門檻 (Margin Call)": "法定證券業務借貸的低限追繳基準。當擔保品價格大跌導致維持率低於 130% 時，券商會在 2 個營業日內發出追繳通知，若未補繳擔保品或還款，券商有權強制處分股票 (斷頭)。",
+      "正二槓桿 ETF (00631L / LQQ)": "追蹤標的指數『單日』2 倍報酬的槓桿型 ETF。在長線單邊多頭市場中具超額複利效應，但在盤整市場中需注意每日再平衡產生的波動衰減。",
+      "波動衰減 (Volatility Decay)": "槓桿 ETF 每日再平衡機制引起的淨值耗損。在漲跌震盪盤整的市場中（例如第一天漲10%、第二天跌10%），槓桿 ETF 的長期累積報酬會低於原型指數的 2 倍，故需定期檢視曝險。",
+      "60MA 季線趨勢驗證": "60 日移動平均線 (季線)，常用於判斷中長線大盤多空分界。當指數回檔後重新站回 60MA，代表中期買盤力道回升，趨勢修復。"
+    };
+
     function scrollToSlide(idx) {
       if (idx < 1) idx = 1;
       if (idx > totalSlides) idx = totalSlides;
@@ -500,6 +684,109 @@
         prevSlide();
       }
     });
+
+    // Notes Drawer Management
+    function toggleDrawer() {
+      document.getElementById('notes-drawer').classList.toggle('open');
+    }
+
+    function getNotes() {
+      try {
+        return JSON.parse(localStorage.getItem('ppt_side_notes')) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNote(term, desc) {
+      const notes = getNotes();
+      notes.unshift({
+        id: Date.now(),
+        term: term,
+        desc: desc,
+        date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      });
+      localStorage.setItem('ppt_side_notes', JSON.stringify(notes));
+      renderNotes();
+      document.getElementById('notes-drawer').classList.add('open');
+    }
+
+    function deleteNote(id) {
+      let notes = getNotes();
+      notes = notes.filter(n => n.id !== id);
+      localStorage.setItem('ppt_side_notes', JSON.stringify(notes));
+      renderNotes();
+    }
+
+    function renderNotes() {
+      const notes = getNotes();
+      document.getElementById('note-count').innerText = notes.length;
+      const content = document.getElementById('drawer-content');
+      
+      if (notes.length === 0) {
+        content.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:2rem 0;">目前無 Side-Note 備註筆記。<br>點擊簡報中的藍色專有名詞，或圈選文字即可新增！</div>`;
+        return;
+      }
+
+      content.innerHTML = notes.map(n => `
+        <div class="note-card">
+          <div class="note-term"><i class="fa-solid fa-lightbulb"></i> ${escapeHtml(n.term)}</div>
+          <div class="note-desc">${escapeHtml(n.desc)}</div>
+          <div class="note-footer">
+            <span><i class="fa-regular fa-clock"></i> ${n.date}</span>
+            <button class="btn-del-note" onclick="deleteNote(${n.id})" title="刪除筆記"><i class="fa-solid fa-trash-can"></i> 刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    // Explain Term Action
+    function explainTerm(termKey) {
+      const desc = termDict[termKey] || `這是 Ivan 簡報中的專有名詞【${termKey}】，代表理財風控與資產配置的核心策略。`;
+      saveNote(termKey, desc);
+    }
+
+    // Text Selection Event Listener for Any Custom Text inside Slides
+    let selectedTextCache = "";
+
+    document.addEventListener('selectionchange', () => {
+      const selection = window.getSelection();
+      const text = selection.toString().trim();
+      const popover = document.getElementById('selection-popover');
+
+      if (text.length > 1) {
+        selectedTextCache = text;
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        
+        popover.style.top = `${rect.top + window.scrollY - 10}px`;
+        popover.style.left = `${rect.left + window.scrollX + (rect.width / 2)}px`;
+        popover.style.display = 'flex';
+      } else {
+        setTimeout(() => {
+          if (!window.getSelection().toString().trim()) {
+            popover.style.display = 'none';
+          }
+        }, 200);
+      }
+    });
+
+    function askAiForSelectedText() {
+      if (!selectedTextCache) return;
+      const termName = selectedTextCache.length > 25 ? selectedTextCache.substring(0, 25) + '...' : selectedTextCache;
+      const desc = `這是簡報中反白標記的文段：「${selectedTextCache}」。觀念重點在於提醒投資人專注淨資產增長，並隨時評估擔保品與負債狀況。`;
+      saveNote(termName, desc);
+      document.getElementById('selection-popover').style.display = 'none';
+    }
+
+    window.onload = () => {
+      renderNotes();
+    };
   </script>
 </body>
 </html>
