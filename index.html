@@ -681,7 +681,7 @@
         <i class="fa-solid fa-calculator"></i> 槓桿計算
       </button>
       <button class="tab-btn" onclick="switchTab('assets')">
-        <i class="fa-solid fa-user-shield"></i> 私人資產細節
+        <i class="fa-solid fa-brain"></i> 跨國帳戶與長期記憶庫
       </button>
       <button class="tab-btn" onclick="switchTab('slides')">
         <i class="fa-solid fa-file-powerpoint"></i> 精華簡報與導覽
@@ -838,102 +838,55 @@
       </div>
     </div>
 
-    <!-- TAB 3: ASSETS DETAIL (PRIVATE LOCAL TAB) -->
+    <!-- TAB 3: GLOBAL MULTI-ACCOUNT MEMORY HUB -->
     <div id="tab-assets" class="tab-content">
-      <div class="calc-card">
-        <div class="calc-header">
-          <span><i class="fa-solid fa-user-lock" style="color: var(--primary);"></i> 個人私人資產明細管理</span>
-          <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 儲存於本機瀏覽器 (localStorage)</span>
-        </div>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
-          在下方編輯你的持股標的、槓桿類型與是否設質。按下「儲存資產資料」後，資料將儲存於你個人電腦瀏覽器 (localStorage)。提醒：本機資料仍可能受瀏覽器擴充功能或同源腳本讀取，如於共用電腦使用，離線前請點選「清空本機紀錄」。
-        </p>
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Header & Import Card -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <span><i class="fa-solid fa-brain" style="color: var(--primary);"></i> 跨國帳戶與長期記憶庫 (Global Multi-Account Memory Hub)</span>
+            <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 本地私密儲存</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.5;">
+            無需手動逐筆填表！您可以直接貼入 <strong>IBKR 對帳單 / 截圖文字 / CSV / JSON 快照</strong> 或點選範本，系統將自動解析各國帳戶淨值、槓桿與持倉重點，並記錄為 AI 助手的<strong>長期記憶庫</strong>。
+          </p>
 
-        <!-- Holdings Table -->
-        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-main);">📈 股票與持股明細</h4>
-        <table class="asset-table" id="table-holdings">
-          <thead>
-            <tr>
-              <th>股票標的/代號</th>
-              <th>槓桿屬性</th>
-              <th>是否已設質質押</th>
-              <th>市值 (元)</th>
-              <th>質押借款 (元)</th>
-              <th>備註說明</th>
-              <th style="width:40px;"></th>
-            </tr>
-          </thead>
-          <tbody id="body-holdings">
-            <tr>
-              <td><input type="text" value="0050 元大台灣50" class="h-name"></td>
-              <td>
-                <select class="h-type">
-                  <option value="1x" selected>原型 1x</option>
-                  <option value="2x">正二 2x</option>
-                </select>
-              </td>
-              <td>
-                <select class="h-is-pledged">
-                  <option value="yes" selected>已設質擔保品</option>
-                  <option value="no">未設質自由持股</option>
-                </select>
-              </td>
-              <td><input type="number" value="300000" min="0" class="h-val"></td>
-              <td><input type="number" value="300000" min="0" class="h-loan"></td>
-              <td><input type="text" value="作為質押擔保品" class="h-note"></td>
-              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
-            </tr>
-            <tr>
-              <td><input type="text" value="006208 富邦台50" class="h-name"></td>
-              <td>
-                <select class="h-type">
-                  <option value="1x" selected>原型 1x</option>
-                  <option value="2x">正二 2x</option>
-                </select>
-              </td>
-              <td>
-                <select class="h-is-pledged">
-                  <option value="yes">已設質擔保品</option>
-                  <option value="no" selected>未設質自由持股</option>
-                </select>
-              </td>
-              <td><input type="number" value="300000" min="0" class="h-val"></td>
-              <td><input type="number" value="0" min="0" class="h-loan"></td>
-              <td><input type="text" value="自由市值部位" class="h-note"></td>
-              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
-            </tr>
-            <tr>
-              <td><input type="text" value="00631L 正二" class="h-name"></td>
-              <td>
-                <select class="h-type">
-                  <option value="1x">原型 1x</option>
-                  <option value="2x" selected>正二 2x</option>
-                </select>
-              </td>
-              <td>
-                <select class="h-is-pledged">
-                  <option value="yes">已設質擔保品</option>
-                  <option value="no" selected>未設質自由持股</option>
-                </select>
-              </td>
-              <td><input type="number" value="400000" min="0" class="h-val"></td>
-              <td><input type="number" value="0" min="0" class="h-loan"></td>
-              <td><input type="text" value="槓桿增益部位" class="h-note"></td>
-              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
-            </tr>
-          </tbody>
-        </table>
-        <button class="btn-add-row" onclick="addHoldingRow()"><i class="fa-solid fa-plus"></i> 新增持股項目</button>
+          <!-- Quick Demo Presets -->
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            <button class="prompt-chip" onclick="loadPresetAccount('ibkr_eur')">
+              <i class="fa-solid fa-file-invoice-dollar"></i> 載入 IBKR 歐元帳戶截圖快照 (EUR 25.6k)
+            </button>
+            <button class="prompt-chip" onclick="loadPresetAccount('taiwan_pledge')">
+              <i class="fa-solid fa-building-columns"></i> 載入 台灣券商股票質押帳戶 (TWD 500萬)
+            </button>
+            <button class="prompt-chip" onclick="loadPresetAccount('us_firstrade')">
+              <i class="fa-solid fa-globe"></i> 載入 美股 Firstrade 帳戶 (USD 50k)
+            </button>
+          </div>
 
-        <!-- Action Bar -->
-        <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
-          <button class="btn-send" style="width:auto; padding:0.75rem 1.5rem; font-size:0.9rem; font-weight:700;" onclick="savePrivateAssetDetails()">
-            <i class="fa-solid fa-floppy-disk"></i> 儲存資產資料 (存於本機瀏覽器)
-          </button>
-          <button class="prompt-chip" style="color:var(--accent-red);" onclick="clearPrivateAssetDetails()">
-            <i class="fa-solid fa-trash-can"></i> 清空個人紀錄
-          </button>
+          <!-- Raw Text / JSON Import Input -->
+          <div class="form-group">
+            <label>對帳單文字或 JSON 快照輸入</label>
+            <textarea id="raw-statement-input" rows="3" style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem; font-family: inherit; font-size: 0.85rem;" placeholder="請貼入 IBKR/券商對帳單文字（例如：帳戶淨值 25,659 EUR、持倉市值 28,474 EUR、借款 2,821 EUR）..."></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex; gap:0.75rem; margin-top:0.75rem;">
+            <button class="btn-send" style="width:auto; padding:0.6rem 1.25rem; font-size:0.88rem; font-weight:700;" onclick="parseAndSaveStatement()">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> 執行 AI 解析並寫入長期記憶
+            </button>
+            <button class="prompt-chip" style="color:var(--accent-red);" onclick="clearAllMemoryAccounts()">
+              <i class="fa-solid fa-trash-can"></i> 清空記憶庫
+            </button>
+          </div>
         </div>
+
+        <!-- Registered Long-Term Memory Cards Container -->
+        <div id="memory-accounts-container">
+          <!-- Dynamically populated by JS renderMemoryAccounts() -->
+        </div>
+
       </div>
     </div>
 
@@ -1346,8 +1299,192 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       checkServerStatus();
-      loadPrivateAssetDetails();
       window.runLeverageCalc();
+    });
+  </script>
+
+  <!-- Global Multi-Account Long-Term Memory Renderer Script -->
+  <script type="module">
+    import { getSavedAccounts, saveAccounts, parseRawStatementText, DEMO_PRESETS } from './js/memory.js';
+
+    function fmtNum(num, currency = '') {
+      if (num === null || num === undefined) return '--';
+      const formatted = Number(num).toLocaleString('en-US', { maximumFractionDigits: 2 });
+      return currency ? `${formatted} ${currency}` : formatted;
+    }
+
+    function renderMemoryAccounts() {
+      const container = document.getElementById('memory-accounts-container');
+      if (!container) return;
+
+      const accounts = getSavedAccounts();
+      if (accounts.length === 0) {
+        container.innerHTML = `
+          <div class="calc-card" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--border-hover);"></i>
+            <p>目前尚無紀錄之跨國帳戶記憶。點選上方範本或貼入對帳單即可建立長期記憶卡片。</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      accounts.forEach((acc, idx) => {
+        const bRatio = acc.borrowingRatio || (acc.netLiquidation > 0 ? Number(((acc.marginLoan / acc.netLiquidation) * 100).toFixed(1)) : 0);
+        const safe20 = acc.safeLimit20 || (acc.netLiquidation * 0.20);
+        const safeRoom = acc.safeRoom || Math.max(0, safe20 - acc.marginLoan);
+        const riskClass = bRatio < 20 ? 'badge-success' : bRatio < 40 ? 'badge-warning' : 'badge-danger';
+        const riskLabelText = bRatio < 20 ? '安全' : bRatio < 40 ? '警戒' : '高風險';
+
+        html += `
+          <div class="calc-card" style="margin-bottom: 1.5rem;">
+            <!-- Card Header (Matching Screenshot 1) -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 1rem;">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${acc.source || 'ACCOUNT SNAPSHOT'}</span>
+                <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">${acc.accountName}</h3>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">更新時間：${acc.updatedAt}</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="status-badge ${riskClass}">${riskLabelText}</span>
+                <button class="btn-row-action" style="color: var(--accent-red);" onclick="deleteMemoryAccount('${acc.accountId || idx}')" title="刪除此帳戶記憶"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            </div>
+
+            <!-- Hero Metrics Grid (Matching Screenshot 1) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+              <div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">實際曝險倍率</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">${acc.effectiveLeverage || '1.1'}x</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">持倉 ${fmtNum(acc.positionsValue, acc.currency)}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">淨值 ${fmtNum(acc.netLiquidation, acc.currency)}</div>
+              </div>
+              <div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">20% 安全線借款額度</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">${fmtNum(safe20, acc.currency)}</div>
+                <div style="font-size: 0.78rem; color: var(--accent-green); font-weight: 700; margin-top: 0.25rem;">距安全線還有：${fmtNum(safeRoom, acc.currency)}</div>
+              </div>
+              <div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">借款比例 (以淨值計算)</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: ${bRatio > 20 ? 'var(--accent-red)' : 'var(--accent-green)'};">${bRatio}%</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">目前借款 ${fmtNum(acc.marginLoan, acc.currency)}</div>
+              </div>
+            </div>
+
+            <!-- Account Details Card Grid (Matching Screenshot 2) -->
+            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;"><i class="fa-solid fa-list-check"></i> 帳戶明細 (核對用資料)</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-bottom: 1.25rem;">
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">帳戶淨值 Net Liquidation</div>
+                <div style="font-size: 0.95rem; font-weight: 700;">${fmtNum(acc.netLiquidation, acc.currency)}</div>
+              </div>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">現金 Settled Cash</div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: ${acc.settledCash < 0 ? 'var(--accent-red)' : 'var(--accent-green)'};">${fmtNum(acc.settledCash, acc.currency)}</div>
+              </div>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">持倉市值 Positions</div>
+                <div style="font-size: 0.95rem; font-weight: 700;">${fmtNum(acc.positionsValue, acc.currency)}</div>
+              </div>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">維持保證金 Maintenance</div>
+                <div style="font-size: 0.95rem; font-weight: 700;">${fmtNum(acc.maintenanceMargin, acc.currency)}</div>
+              </div>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">超額流動性 Excess Liquidity</div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent-green);">${fmtNum(acc.excessLiquidity, acc.currency)}</div>
+              </div>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted);">購買力 Buying Power</div>
+                <div style="font-size: 0.95rem; font-weight: 700;">${fmtNum(acc.buyingPower, acc.currency)}</div>
+              </div>
+            </div>
+
+            <!-- Holdings Exposure Table (Matching Screenshot 3) -->
+            ${acc.holdings && acc.holdings.length > 0 ? `
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;"><i class="fa-solid fa-chart-pie"></i> 持倉曝險配置 (真實資料)</h4>
+              <table class="asset-table" style="margin-bottom: 0.5rem;">
+                <thead>
+                  <tr>
+                    <th>標的/代號</th>
+                    <th>本金 (市值)</th>
+                    <th>本金占比</th>
+                    <th>內建槓桿倍率</th>
+                    <th>等效市場曝險</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${acc.holdings.map(h => `
+                    <tr>
+                      <td><strong>${h.name}</strong> <span style="font-size:0.75rem; color:var(--text-muted);">${h.ticker || ''}</span></td>
+                      <td>${fmtNum(h.marketValue, acc.currency)}</td>
+                      <td>${h.capitalWeight !== undefined ? h.capitalWeight + '%' : '--'}</td>
+                      <td><span class="status-badge ${h.leverage > 1 ? 'badge-warning' : 'badge-success'}">${h.leverage}x</span></td>
+                      <td><strong>${fmtNum(h.effectiveExposure || h.marketValue, acc.currency)}</strong></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </tbody>
+            ` : ''}
+
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.5rem;"><i class="fa-solid fa-note-sticky"></i> ${acc.note || ''}</p>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    window.loadPresetAccount = function(presetKey) {
+      const preset = DEMO_PRESETS[presetKey];
+      if (!preset) return;
+      let accounts = getSavedAccounts();
+      accounts = accounts.filter(a => a.accountId !== preset.accountId);
+      accounts.unshift(preset);
+      saveAccounts(accounts);
+      renderMemoryAccounts();
+      alert(`✅ 已成功載入並記錄【${preset.accountName}】至助手的長期記憶庫！`);
+    };
+
+    window.parseAndSaveStatement = function() {
+      const inputEl = document.getElementById('raw-statement-input');
+      const rawText = inputEl ? inputEl.value.trim() : '';
+      if (!rawText) {
+        alert('請先輸入或貼入對帳單文字/JSON 快照！');
+        return;
+      }
+
+      const parsedAcc = parseRawStatementText(rawText);
+      if (!parsedAcc) {
+        alert('無法從貼入內容中識別帳戶數字，請確認包含淨值/市值/借款等文字。');
+        return;
+      }
+
+      const accounts = getSavedAccounts();
+      accounts.unshift(parsedAcc);
+      saveAccounts(accounts);
+      if (inputEl) inputEl.value = '';
+      renderMemoryAccounts();
+      alert(`✅ 成功解析【${parsedAcc.accountName}】並記錄至助手的長期記憶庫！`);
+    };
+
+    window.clearAllMemoryAccounts = function() {
+      if (confirm('確定要清空所有長期記憶庫中的跨國帳戶資料嗎？')) {
+        localStorage.removeItem('global_memory_accounts');
+        renderMemoryAccounts();
+        alert('已清空所有記憶庫資料。');
+      }
+    };
+
+    window.deleteMemoryAccount = function(accId) {
+      let accounts = getSavedAccounts();
+      accounts = accounts.filter((a, idx) => a.accountId !== accId && idx !== parseInt(accId));
+      saveAccounts(accounts);
+      renderMemoryAccounts();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMemoryAccounts();
     });
   </script>
 </body>
