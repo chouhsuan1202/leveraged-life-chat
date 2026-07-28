@@ -12,8 +12,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Marked Markdown Parser (Pinned v12.0.0) -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
-  <!-- DOMPurify HTML Sanitizer (v3.0.9) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+  <!-- Instant Tab Switching Handler -->
+  <script>
+    window.switchTab = function(tabId, btnEl) {
+      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(content) { content.classList.remove('active'); });
+      
+      var activeBtn = btnEl;
+      if (!activeBtn && typeof window !== 'undefined' && window.event) {
+        activeBtn = window.event.currentTarget || window.event.target;
+      }
+      if (activeBtn && activeBtn.classList) {
+        activeBtn.classList.add('active');
+      }
+
+      var targetContent = document.getElementById('tab-' + tabId);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+    };
+  </script>
   <style>
     :root {
       --bg-main: #ffffff;

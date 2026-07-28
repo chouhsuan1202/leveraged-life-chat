@@ -173,3 +173,10 @@ export function parseRawStatementText(rawText) {
 
   return null;
 }
+
+if (typeof window !== 'undefined') {
+  window.DEMO_PRESETS = DEMO_PRESETS;
+  window.getSavedAccounts = getSavedAccounts;
+  window.saveAccounts = saveAccounts;
+  window.parseRawStatementText = parseRawStatementText;
+}
