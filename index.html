@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>槓桿理財對話助手 (知識檢索版)</title>
+  <title>槓桿理財對話助手 (主題查表與靜態風控試算版)</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Marked Markdown Parser (Pinned version) -->
+  <!-- Marked Markdown Parser (Pinned v12.0.0) -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
   <style>
     :root {
@@ -503,17 +503,13 @@
       font-weight: 700;
     }
 
-    .asset-table input {
+    .asset-table input, .asset-table select {
       width: 100%;
       border: 1px solid var(--border-color);
       border-radius: 6px;
       padding: 0.4rem 0.6rem;
       font-size: 0.85rem;
       outline: none;
-    }
-
-    .asset-table input:focus {
-      border-color: var(--primary);
     }
 
     .btn-row-action {
@@ -669,7 +665,7 @@
         <i class="fa-solid fa-chart-line"></i>
       </div>
       <div class="brand-title">
-        <h1>槓桿理財對話助手 (知識檢索版)</h1>
+        <h1>槓桿理財對話助手 (主題查表與靜態風控試算版)</h1>
       </div>
     </div>
   </header>
@@ -680,7 +676,7 @@
     <!-- Disclaimer Notice Banner -->
     <div class="disclaimer-banner">
       <i class="fa-solid fa-triangle-exclamation"></i>
-      <strong>聲明提醒：</strong>本工具提供之試算與對話回應，係整理自 Podcaster Ivan 公開影音之觀念摘要。數字結果為靜態模擬，實際維持率、追繳門檻與授信條件以承作金融機構契約為準。不構成個人化投資與貸款建議。
+      <strong>聲明提醒：</strong>本工具提供之試算與主題檢索內容，整理自 Podcaster Ivan 公開影音之重點觀念。維持率試算嚴格限定以「實際設質擔保品市值」進行靜態估算，實際追繳門檻與條款以金融機構契約為準。不構成個人化投資與貸款建議。
     </div>
 
     <!-- 4 Clean Navigation Tabs -->
@@ -705,21 +701,21 @@
         <!-- Main Chat Box -->
         <div class="chat-card">
           <div class="chat-header">
-            <span><i class="fa-solid fa-robot" style="color: var(--primary);"></i> 理財對話檢索器</span>
-            <span style="font-size: 0.78rem; color: var(--accent-green);"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> 知識庫在線</span>
+            <span><i class="fa-solid fa-robot" style="color: var(--primary);"></i> 影音主題知識對照器</span>
+            <span style="font-size: 0.78rem; color: var(--accent-green);"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> 查表引擎在線</span>
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="message assistant">
               <div class="avatar"><i class="fa-solid fa-robot"></i></div>
               <div class="bubble">
                 <p>你好！我是 <strong>槓桿理財對話助手</strong>。</p>
-                <p>我已整理影音主題知識庫。</p>
-                <p>你可以問我關於 <strong>股票質押、信貸與房貸說明、維持率風控</strong>，或點選上方 <strong>精華簡報與導覽</strong> 快速複習重點！</p>
+                <p>我已將影音主題整理為結構化知識對照庫。</p>
+                <p>你可以點擊右側熱門主題或查詢：<strong>股票質押維持率、信貸與 DBR 22 房貸評估、正二波動衰減與曝險算式</strong>！</p>
               </div>
             </div>
           </div>
           <div class="chat-input-area">
-            <textarea id="user-input" placeholder="請輸入問題或資產狀況... (按 Enter 發送)" onkeydown="handleKeyDown(event)"></textarea>
+            <textarea id="user-input" placeholder="請輸入主題關鍵字 (例如：房貸、維持率、正二、加碼)..." onkeydown="handleKeyDown(event)"></textarea>
             <button class="btn-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
           </div>
         </div>
@@ -727,7 +723,7 @@
         <!-- Sidebar Prompts -->
         <div class="quick-sidebar">
           <div class="quick-title">
-            <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> 熱門問題
+            <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> 熱門主題對照
           </div>
           <button class="prompt-chip" onclick="askQuickPrompt('信貸與 DBR 22 倍規範對未來房貸額度有何影響？')">
             🏦 信貸與 DBR 22 對房貸評估影響
@@ -752,40 +748,47 @@
         <div class="calc-card">
           <div class="calc-header">
             <span><i class="fa-solid fa-sliders" style="color: var(--primary);"></i> 資產試算</span>
-            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">🔒 瀏覽器端私有</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">🔒 瀏覽器本機端</span>
           </div>
           <div class="form-group">
-            <label>原型 1x 股票市值 (0050 / SXR8 等)</label>
+            <label>已設質質押擔保品股票市值 (用於維持率計算)</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-stock-1x" value="600000" oninput="calculateLeverage()">
+              <input type="number" id="inp-pledged-stock" value="300000" min="0" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>未設質原型 1x 股票市值 (0050 / SXR8 等)</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-unpledged-1x" value="300000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>正二 2x 槓桿股票市值 (00631L / LQQ 等)</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-stock-2x" value="400000" oninput="calculateLeverage()">
+              <input type="number" id="inp-stock-2x" value="400000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>股票質押借款金額</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-collateral-loan" value="300000" oninput="calculateLeverage()">
+              <input type="number" id="inp-collateral-loan" value="300000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>個人信用貸款總額</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-credit-loan" value="200000" oninput="calculateLeverage()">
+              <input type="number" id="inp-credit-loan" value="200000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
             <label>備用金與現金</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-cash-reserve" value="100000" oninput="calculateLeverage()">
+              <input type="number" id="inp-cash-reserve" value="100000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
@@ -810,26 +813,26 @@
               <div class="metric-label">總槓桿股票曝險倍率 (含正二 2x 疊加)</div>
               <div class="metric-value val-primary" id="res-exposure-ratio">2.33 x</div>
             </div>
-            <span class="status-badge badge-warning" id="badge-exposure">高曝險</span>
+            <span class="status-badge badge-warning" id="badge-exposure">高於目標 (>1.5x)</span>
           </div>
 
           <div class="metric-box">
             <div>
-              <div class="metric-label">質押維持率 (估算)</div>
-              <div class="metric-value val-gold" id="res-margin-ratio">333.3 %</div>
+              <div class="metric-label">質押維持率 (僅以實際設質擔保品估算)</div>
+              <div class="metric-value val-gold" id="res-margin-ratio">100.0 %</div>
             </div>
-            <span class="status-badge badge-safe" id="badge-margin">極度安全 (>200%)</span>
+            <span class="status-badge badge-danger" id="badge-margin">已低於追繳線 (130%)</span>
           </div>
 
           <div class="metric-box">
             <div>
-              <div class="metric-label">擔保品資產可承受跌幅 (靜態估算)</div>
-              <div class="metric-value val-primary" id="res-max-drop">-61.0 %</div>
+              <div class="metric-label">設質擔保品價格可承受跌幅 (靜態估算)</div>
+              <div class="metric-value val-primary" id="res-max-drop">0.0 % (已觸及追繳)</div>
             </div>
             <i class="fa-solid fa-shield-halved fa-xl" style="color: rgba(37, 99, 235, 0.25);"></i>
           </div>
           <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">
-            * 靜態計算公式：`1 - (130% ÷ 當前維持率)`。未納入盤中價位波動與個別券商合約處分條款。
+            * 維持率計算式：\`設質擔保品市值 ÷ 質押借款\`。跌幅計算式：\`1 - (130% ÷ 當前維持率)\`（低於 130% 時顯示 0.0%）。實際以券商契約為準。
           </p>
         </div>
       </div>
@@ -840,10 +843,10 @@
       <div class="calc-card">
         <div class="calc-header">
           <span><i class="fa-solid fa-user-lock" style="color: var(--primary);"></i> 個人私人資產明細管理</span>
-          <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 僅存於你本機瀏覽器 (localStorage)</span>
+          <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 儲存於本機瀏覽器 (localStorage)</span>
         </div>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
-          在下方編輯你的持股標的、質押機構與信貸明細。按下「儲存資產資料」後，資料將僅保存在你個人電腦中。提醒：若於共用電腦使用，請於離線前點選「清空本機紀錄」。
+          在下方編輯你的持股標的、是否已設質質押與信貸明細。按下「儲存資產資料」後，資料將儲存於你個人電腦瀏覽器 (localStorage)。提醒：本機資料仍可能受瀏覽器擴充功能或同源腳本讀取，如於共用電腦使用，離線前請點選「清空本機紀錄」。
         </p>
 
         <!-- Holdings Table -->
@@ -852,7 +855,8 @@
           <thead>
             <tr>
               <th>股票標的/代號</th>
-              <th>標的類型</th>
+              <th>槓桿屬性</th>
+              <th>是否已設質質押</th>
               <th>市值 (元)</th>
               <th>質押借款 (元)</th>
               <th>備註說明</th>
@@ -868,9 +872,34 @@
                   <option value="2x">正二 2x</option>
                 </select>
               </td>
-              <td><input type="number" value="600000" class="h-val"></td>
-              <td><input type="number" value="200000" class="h-loan"></td>
-              <td><input type="text" value="核心市值型庫存" class="h-note"></td>
+              <td>
+                <select class="h-is-pledged">
+                  <option value="yes" selected>已設質擔保品</option>
+                  <option value="no">未設質自由持股</option>
+                </select>
+              </td>
+              <td><input type="number" value="300000" min="0" class="h-val"></td>
+              <td><input type="number" value="300000" min="0" class="h-loan"></td>
+              <td><input type="text" value="作為質押擔保品" class="h-note"></td>
+              <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="006208 富邦台50" class="h-name"></td>
+              <td>
+                <select class="h-type">
+                  <option value="1x" selected>原型 1x</option>
+                  <option value="2x">正二 2x</option>
+                </select>
+              </td>
+              <td>
+                <select class="h-is-pledged">
+                  <option value="yes">已設質擔保品</option>
+                  <option value="no" selected>未設質自由持股</option>
+                </select>
+              </td>
+              <td><input type="number" value="300000" min="0" class="h-val"></td>
+              <td><input type="number" value="0" min="0" class="h-loan"></td>
+              <td><input type="text" value="自由市值部位" class="h-note"></td>
               <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
             </tr>
             <tr>
@@ -881,8 +910,14 @@
                   <option value="2x" selected>正二 2x</option>
                 </select>
               </td>
-              <td><input type="number" value="400000" class="h-val"></td>
-              <td><input type="number" value="100000" class="h-loan"></td>
+              <td>
+                <select class="h-is-pledged">
+                  <option value="yes">已設質擔保品</option>
+                  <option value="no" selected>未設質自由持股</option>
+                </select>
+              </td>
+              <td><input type="number" value="400000" min="0" class="h-val"></td>
+              <td><input type="number" value="0" min="0" class="h-loan"></td>
               <td><input type="text" value="槓桿增益部位" class="h-note"></td>
               <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
             </tr>
@@ -893,7 +928,7 @@
         <!-- Action Bar -->
         <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
           <button class="btn-send" style="width:auto; padding:0.75rem 1.5rem; font-size:0.9rem; font-weight:700;" onclick="savePrivateAssetDetails()">
-            <i class="fa-solid fa-floppy-disk"></i> 儲存資產資料 (僅保存在本機)
+            <i class="fa-solid fa-floppy-disk"></i> 儲存資產資料 (存於本機瀏覽器)
           </button>
           <button class="prompt-chip" style="color:var(--accent-red);" onclick="clearPrivateAssetDetails()">
             <i class="fa-solid fa-trash-can"></i> 清空個人紀錄
@@ -922,7 +957,7 @@
         <!-- Knowledge Cards below PPT -->
         <div class="kb-grid">
           <div class="kb-card">
-            <h3><i class="fa-solid fa-brain"></i> 01. 核心觀念與淨資產</h3>
+            <h3><i class="fa-solid fa-brain"></i> 01. 核心觀念與淨資產 (EP25/EP27/EP30)</h3>
             <ul>
               <li><strong>看淨資產而非流水帳</strong>：關注總資產減總負債擴張速度。</li>
               <li><strong>人力資本折現</strong>：把未來薪資提早參與複利成長。</li>
@@ -931,15 +966,15 @@
             </ul>
           </div>
           <div class="kb-card">
-            <h3><i class="fa-solid fa-building-columns"></i> 02. 質押與信貸實操</h3>
+            <h3><i class="fa-solid fa-building-columns"></i> 02. 質押與信貸實操 (EP13/EP18/EP22)</h3>
             <ul>
-              <li><strong>質押免還本金</strong>：成數建議控在 30% 至 40%，每年繳息辦理展延。</li>
+              <li><strong>質押維持率算式</strong>：以「實際設質擔保品 ÷ 借款」計算（EP13 勘誤提醒：500 萬設質借 100 萬維持率為 500%）。</li>
               <li><strong>信貸與 DBR 22 規範</strong>：無擔保債務月還款納入銀行收支比評估，可能影響房貸。</li>
-              <li><strong>維持率安全區</strong>：保持在 200% 至 300%+，靜態耐受擔保品 50%+ 跌幅。</li>
+              <li><strong>維持率建議區</strong>：保持在 200% 至 300%+，靜態耐受擔保品 50%+ 跌幅。</li>
             </ul>
           </div>
           <div class="kb-card">
-            <h3><i class="fa-solid fa-chart-line"></i> 03. 資產配置與正二</h3>
+            <h3><i class="fa-solid fa-chart-line"></i> 03. 資產配置與正二 (EP31/EP35/EP38)</h3>
             <ul>
               <li><strong>正二 (00631L/LQQ) 風險</strong>：留意每日再平衡波動衰減與價差成本。</li>
               <li><strong>總股票曝險算式</strong>：`總曝險 = (1x 股票) + (2x 股票 × 2)`，建議總曝險控在 1.2x 至 1.5x。</li>
@@ -958,9 +993,9 @@
   </footer>
 
   <script>
-    // HTML Sanitization helper to prevent XSS (P0 Fix)
+    // Strict HTML Sanitization helper
     function escapeHtml(str) {
-      if (typeof str !== 'string') return str;
+      if (typeof str !== 'string') return '';
       return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -970,10 +1005,10 @@
     }
 
     const localAnswers = {
-      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
-      "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n- **計算公式**：\`維持率 = (質押股票總市值 / 借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。`,
-      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
-      "加碼": `### 🚨 大盤回檔加碼風控前提\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
+      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP18 / EP22 信貸實操與銀行評估\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
+      "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n📌 **引用出處**：Podcast EP13 (含 500% 官方勘誤) / 證交所業務借貸規定\n\n- **精準計算公式**：\`維持率 = (實際設質擔保品股票市值 / 質押借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。若當前維持率已低於 130%，跌幅將顯示 0.0%（已觸及追繳）。`,
+      "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n📌 **引用出處**：Podcast EP31 / 證交所槓桿型 ETF 警示說明\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
+      "加碼": `### 🚨 大盤回檔加碼風控前提\n\n📌 **引用出處**：Podcast EP35 / EP38 回檔加碼 SOP\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
     };
 
     function switchTab(tabId) {
@@ -1008,13 +1043,20 @@
       appendMessage('user', text);
       inputEl.value = '';
 
-      let reply = "根據知識庫整理：\n\n淨資產增長與風控安全是核心。質押成數建議控制在 30% 至 40%，維持率保持 200% 以上，正二曝險需計入 2 倍槓桿疊加，總曝險建議控在 1.2x 至 1.5x。";
+      let matched = false;
+      let reply = "";
       for (let key in localAnswers) {
         if (text.includes(key)) {
           reply = localAnswers[key];
+          matched = true;
           break;
         }
       }
+
+      if (!matched) {
+        reply = "ℹ️ **主題查表無精確匹配紀錄**\n\n目前對照表未找到與此關鍵字精確對應的影音筆記。建議參考右側『熱門主題對照』點選，或切換至【精華簡報與導覽】頁籤查閱觀念、質押信貸與正二配置之完整三張主題筆記卡片。";
+      }
+
       setTimeout(() => {
         appendMessage('assistant', reply);
       }, 300);
@@ -1022,7 +1064,8 @@
 
     function renderMarkdownText(text) {
       if (window.marked && typeof window.marked.parse === 'function') {
-        return window.marked.parse(text);
+        const rawHtml = window.marked.parse(text);
+        return rawHtml;
       }
       return escapeHtml(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
     }
@@ -1033,7 +1076,6 @@
       msgDiv.className = `message ${role}`;
       
       const icon = role === 'assistant' ? 'fa-robot' : 'fa-user';
-      // Secure HTML rendering preventing XSS
       const formattedText = role === 'assistant' ? renderMarkdownText(text) : escapeHtml(text);
 
       msgDiv.innerHTML = `
@@ -1045,55 +1087,84 @@
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
     }
 
-    // Calculator Logic with Leveraged ETF Multiplier and 56.7% static drop
+    // Precise Calculator Edge Case Logic
     function calculateLeverage() {
-      const stock1x = parseFloat(document.getElementById('inp-stock-1x').value) || 0;
-      const stock2x = parseFloat(document.getElementById('inp-stock-2x').value) || 0;
-      const colLoan = parseFloat(document.getElementById('inp-collateral-loan').value) || 0;
-      const credLoan = parseFloat(document.getElementById('inp-credit-loan').value) || 0;
-      const cash = parseFloat(document.getElementById('inp-cash-reserve').value) || 0;
+      const pledgedStock = Math.max(0, parseFloat(document.getElementById('inp-pledged-stock').value) || 0);
+      const unpledged1x = Math.max(0, parseFloat(document.getElementById('inp-unpledged-1x').value) || 0);
+      const stock2x = Math.max(0, parseFloat(document.getElementById('inp-stock-2x').value) || 0);
+      const colLoan = Math.max(0, parseFloat(document.getElementById('inp-collateral-loan').value) || 0);
+      const credLoan = Math.max(0, parseFloat(document.getElementById('inp-credit-loan').value) || 0);
+      const cash = Math.max(0, parseFloat(document.getElementById('inp-cash-reserve').value) || 0);
 
-      const totalStockVal = stock1x + stock2x;
-      const totalExposure = stock1x + (stock2x * 2);
+      const totalStockVal = pledgedStock + unpledged1x + stock2x;
+      const totalExposure = pledgedStock + unpledged1x + (stock2x * 2);
       const totalLiabilities = colLoan + credLoan;
       const netWorth = totalStockVal + cash - totalLiabilities;
       
-      const exposureRatio = netWorth > 0 ? (totalExposure / netWorth).toFixed(2) : 0;
-      const marginRatio = colLoan > 0 ? ((totalStockVal / colLoan) * 100).toFixed(1) : '∞';
-      
-      let maxDrop = 'N/A';
-      if (colLoan > 0) {
-        const dropPct = ((1 - (1.3 / (totalStockVal / colLoan))) * 100).toFixed(1);
-        maxDrop = `-${dropPct} %`;
-      }
-
-      document.getElementById('res-net-worth').innerText = `NT$ ${netWorth.toLocaleString()}`;
-      document.getElementById('res-exposure-ratio').innerText = `${exposureRatio} x`;
-      document.getElementById('res-margin-ratio').innerText = `${marginRatio} %`;
-      document.getElementById('res-max-drop').innerText = maxDrop;
-
+      // Exposure Ratio Edge Handling
+      const exposureEl = document.getElementById('res-exposure-ratio');
       const exposureBadge = document.getElementById('badge-exposure');
-      if (parseFloat(exposureRatio) <= 1.5) {
-        exposureBadge.className = 'status-badge badge-safe';
-        exposureBadge.innerText = '健康 (1.2x-1.5x)';
+      if (netWorth <= 0) {
+        exposureEl.innerText = '無法計算 (資不抵債)';
+        exposureBadge.className = 'status-badge badge-danger';
+        exposureBadge.innerText = '資不抵債 (淨資產<=0)';
       } else {
-        exposureBadge.className = 'status-badge badge-warning';
-        exposureBadge.innerText = '高曝險 (>1.5x)';
+        const exposureRatio = (totalExposure / netWorth).toFixed(2);
+        exposureEl.innerText = `${exposureRatio} x`;
+        if (parseFloat(exposureRatio) < 1.2) {
+          exposureBadge.className = 'status-badge badge-safe';
+          exposureBadge.innerText = '低於目標 (<1.2x)';
+        } else if (parseFloat(exposureRatio) <= 1.5) {
+          exposureBadge.className = 'status-badge badge-safe';
+          exposureBadge.innerText = '目標風控區間 (1.2x-1.5x)';
+        } else {
+          exposureBadge.className = 'status-badge badge-warning';
+          exposureBadge.innerText = '高於目標 (>1.5x)';
+        }
       }
 
+      // Net Worth formatting
+      document.getElementById('res-net-worth').innerText = `NT$ ${netWorth.toLocaleString()}`;
+
+      // Maintenance Margin Edge Handling (Strictly Pledging Stock ONLY)
+      const marginEl = document.getElementById('res-margin-ratio');
       const marginBadge = document.getElementById('badge-margin');
+      const dropEl = document.getElementById('res-max-drop');
+
       if (colLoan === 0) {
+        marginEl.innerText = '∞ %';
         marginBadge.className = 'status-badge badge-safe';
         marginBadge.innerText = '無質押借款';
-      } else if (parseFloat(marginRatio) >= 200) {
-        marginBadge.className = 'status-badge badge-safe';
-        marginBadge.innerText = '極度安全 (>200%)';
-      } else if (parseFloat(marginRatio) >= 150) {
-        marginBadge.className = 'status-badge badge-warning';
-        marginBadge.innerText = '警戒區域 (150%-200%)';
-      } else {
+        dropEl.innerText = 'N/A (無借款)';
+      } else if (pledgedStock === 0) {
+        marginEl.innerText = '0.0 %';
         marginBadge.className = 'status-badge badge-danger';
-        marginBadge.innerText = '危險追繳邊緣 (<150%)';
+        marginBadge.innerText = '有借款但未設定設質';
+        dropEl.innerText = '0.0 % (無擔保品)';
+      } else {
+        const marginRatioNum = (pledgedStock / colLoan) * 100;
+        marginEl.innerText = `${marginRatioNum.toFixed(1)} %`;
+
+        if (marginRatioNum < 130) {
+          marginBadge.className = 'status-badge badge-danger';
+          marginBadge.innerText = '已低於追繳線 (130%)';
+          dropEl.innerText = '0.0 % (已觸及追繳)';
+        } else if (marginRatioNum < 150) {
+          marginBadge.className = 'status-badge badge-danger';
+          marginBadge.innerText = '警告：低於 150%';
+          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
+          dropEl.innerText = `-${dropPct} %`;
+        } else if (marginRatioNum < 200) {
+          marginBadge.className = 'status-badge badge-warning';
+          marginBadge.innerText = '警戒區域 (150%-200%)';
+          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
+          dropEl.innerText = `-${dropPct} %`;
+        } else {
+          marginBadge.className = 'status-badge badge-safe';
+          marginBadge.innerText = '維持率充裕 (>200%)';
+          const dropPct = ((1 - (1.3 / (marginRatioNum / 100))) * 100).toFixed(1);
+          dropEl.innerText = `-${dropPct} %`;
+        }
       }
     }
 
@@ -1109,8 +1180,14 @@
             <option value="2x">正二 2x</option>
           </select>
         </td>
-        <td><input type="number" placeholder="市值" class="h-val"></td>
-        <td><input type="number" placeholder="借款" class="h-loan"></td>
+        <td>
+          <select class="h-is-pledged">
+            <option value="yes">已設質擔保品</option>
+            <option value="no" selected>未設質自由持股</option>
+          </select>
+        </td>
+        <td><input type="number" placeholder="市值" min="0" class="h-val"></td>
+        <td><input type="number" placeholder="借款" min="0" class="h-loan"></td>
         <td><input type="text" placeholder="說明" class="h-note"></td>
         <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
       `;
@@ -1124,22 +1201,26 @@
     function savePrivateAssetDetails() {
       const rows = document.querySelectorAll('#body-holdings tr');
       const holdings = [];
-      let totalStock1x = 0;
+      let totalPledgedStock = 0;
+      let totalUnpledged1x = 0;
       let totalStock2x = 0;
       let totalLoan = 0;
 
       rows.forEach(tr => {
         const name = tr.querySelector('.h-name').value;
         const type = tr.querySelector('.h-type').value;
-        const val = parseFloat(tr.querySelector('.h-val').value) || 0;
-        const loan = parseFloat(tr.querySelector('.h-loan').value) || 0;
+        const isPledged = tr.querySelector('.h-is-pledged').value;
+        const val = Math.max(0, parseFloat(tr.querySelector('.h-val').value) || 0);
+        const loan = Math.max(0, parseFloat(tr.querySelector('.h-loan').value) || 0);
         const note = tr.querySelector('.h-note').value;
         if (name || val > 0) {
-          holdings.push({ name, type, val, loan, note });
-          if (type === '2x') {
+          holdings.push({ name, type, isPledged, val, loan, note });
+          if (isPledged === 'yes') {
+            totalPledgedStock += val;
+          } else if (type === '2x') {
             totalStock2x += val;
           } else {
-            totalStock1x += val;
+            totalUnpledged1x += val;
           }
           totalLoan += loan;
         }
@@ -1148,12 +1229,13 @@
       localStorage.setItem('private_assets_list', JSON.stringify(holdings));
       
       // Auto Sync to Calculator
-      document.getElementById('inp-stock-1x').value = totalStock1x;
+      document.getElementById('inp-pledged-stock').value = totalPledgedStock;
+      document.getElementById('inp-unpledged-1x').value = totalUnpledged1x;
       document.getElementById('inp-stock-2x').value = totalStock2x;
-      if (totalLoan > 0) document.getElementById('inp-collateral-loan').value = totalLoan;
+      document.getElementById('inp-collateral-loan').value = totalLoan;
       calculateLeverage();
 
-      alert('✅ 已安全儲存私人資產資料至本機瀏覽器 (localStorage)！');
+      alert('✅ 已儲存私人資產資料至本機瀏覽器 (localStorage)！');
     }
 
     function clearPrivateAssetDetails() {
@@ -1182,8 +1264,14 @@
                     <option value="2x" ${h.type === '2x' ? 'selected' : ''}>正二 2x</option>
                   </select>
                 </td>
-                <td><input type="number" value="${h.val || 0}" class="h-val"></td>
-                <td><input type="number" value="${h.loan || 0}" class="h-loan"></td>
+                <td>
+                  <select class="h-is-pledged">
+                    <option value="yes" ${h.isPledged === 'yes' ? 'selected' : ''}>已設質擔保品</option>
+                    <option value="no" ${h.isPledged === 'no' ? 'selected' : ''}>未設質自由持股</option>
+                  </select>
+                </td>
+                <td><input type="number" value="${h.val || 0}" min="0" class="h-val"></td>
+                <td><input type="number" value="${h.loan || 0}" min="0" class="h-loan"></td>
                 <td><input type="text" value="${escapeHtml(h.note || '')}" class="h-note"></td>
                 <td><button class="btn-row-action" onclick="removeRow(this)"><i class="fa-solid fa-xmark"></i></button></td>
               `;
