@@ -1,51 +1,50 @@
 /**
- * Gemini REST API Client with Function Calling & RAG Integration
+ * Server-Side Gemini REST API Client with Structured Function Calling Loop
+ * ZERO Front-End API Key Exposure
  */
 
 import https from 'https';
-import { searchIvanKnowledge, calculateFinancialMetrics, getGeneralFinanceExplanation } from './tools.js';
+import { calculateFinancialMetrics, searchIvanKnowledge, getGeneralFinanceExplanation } from './tools.js';
 
 const GEMINI_TOOLS_DECLARATION = [
   {
     function_declarations: [
       {
         name: 'calculateFinancialMetrics',
-        description: 'Calculate DBR 22 loan limit, stock pledge maintenance ratio, static price drop %, or effective stock leverage exposure.',
+        description: 'Perform deterministic calculation for DBR 22 limit, maintenance ratio %, static price drop %, or effective leverage exposure ratio.',
         parameters: {
           type: 'OBJECT',
           properties: {
-            type: { type: 'STRING', enum: ['dbr', 'maintenance', 'exposure', 'full'] },
-            monthlyIncome: { type: 'NUMBER', description: 'Monthly income in TWD' },
+            calcType: { type: 'STRING', enum: ['dbr', 'maintenance', 'exposure'] },
+            income: { type: 'NUMBER', description: 'Monthly income in TWD' },
             unsecuredDebt: { type: 'NUMBER', description: 'Existing unsecured debt in TWD' },
             pledgedValue: { type: 'NUMBER', description: 'Total pledged stock market value in TWD' },
-            collateralLoan: { type: 'NUMBER', description: 'Stock collateral loan amount in TWD' },
-            pledged1x: { type: 'NUMBER', description: 'Pledged 1x stock value' },
-            pledged2x: { type: 'NUMBER', description: 'Pledged 2x ETF value' },
-            unpledged1x: { type: 'NUMBER', description: 'Unpledged 1x stock value' },
-            unpledged2x: { type: 'NUMBER', description: 'Unpledged 2x ETF value' },
-            netWorth: { type: 'NUMBER', description: 'Total net worth in TWD' }
+            loanBalance: { type: 'NUMBER', description: 'Stock collateral loan balance in TWD' },
+            totalAssets: { type: 'NUMBER', description: 'Total stock portfolio assets in TWD' },
+            leveragedETFValue: { type: 'NUMBER', description: 'Leveraged 2x ETF value in TWD' },
+            targetRate: { type: 'NUMBER', description: 'Target margin ratio threshold (e.g. 130)' }
           },
-          required: ['type']
+          required: ['calcType']
         }
       },
       {
         name: 'searchIvanKnowledge',
-        description: 'Search Ivan Podcast knowledge base for claims, episode titles, EP numbers, timestamps, errata.',
+        description: 'Search Ivan Podcast catalog for episode claims, EP numbers, titles, errata.',
         parameters: {
           type: 'OBJECT',
           properties: {
-            query: { type: 'STRING', description: 'Search term or topic' }
+            query: { type: 'STRING', description: 'Query topic or keyword' }
           },
           required: ['query']
         }
       },
       {
         name: 'getGeneralFinanceExplanation',
-        description: 'Get general educational financial explanations for topics not explicitly covered by Ivan Podcast.',
+        description: 'Get general educational financial explanations when topic is not covered by Ivan podcast.',
         parameters: {
           type: 'OBJECT',
           properties: {
-            topic: { type: 'STRING', description: 'Financial topic' }
+            topic: { type: 'STRING', description: 'General finance topic' }
           },
           required: ['topic']
         }
@@ -54,15 +53,16 @@ const GEMINI_TOOLS_DECLARATION = [
   }
 ];
 
-const SYSTEM_INSTRUCTION = `你是「槓桿人生AI」，一個親切專業、客觀謹慎的繁體中文理財對話助手。
+const SYSTEM_INSTRUCTION = `你是「槓桿人生AI」，一個親切、專業、客觀且遵守紀律的繁體中文理財對話助手。
 
-原則與回覆要求：
-1. 涉及任何數字計算（DBR 22 上限、質押維持率%、靜態可承受跌幅%、1x/2x等效曝險倍率），必須優先呼叫 calculateFinancialMetrics 工具進行確定性運算，不得手動心算。
-2. 涉及 Ivan 觀點或 Podcast 內容時，優先呼叫 searchIvanKnowledge 查詢相關集數與勘誤（如 EP13 維持率 500% 勘誤）。
-3. 當問題屬於一般金融知識且 Ivan 節目未涵蓋時，呼叫 getGeneralFinanceExplanation 取得說明，開頭必須標明「以下是一般金融知識，不代表 Ivan 的原話。」。
-4. 回答結構直接、清晰，通常包含 2~4 個短段落。
-5. 必須標記來源標籤：📌 Ivan 觀點 / 🏛️ 官方金融規則 / 💡 一般金融知識 / 🧮 本地靜態試算。
-6. 不提供保證獲利或直接買賣指令；當資訊不足時提出一個精準追問；超出理財範圍時禮貌拒答。`;
+原則與回應準則：
+1. 【嚴禁盲目心算】：任何涉及數字計算（DBR 22 上限、維持率%、靜態可承受跌幅%、1x/2x等效曝險），必須呼叫 calculateFinancialMetrics 工具進行確定性試算。
+2. 【資料不足時先追問】：若計算缺乏必要數值（如未提供月薪算 DBR，或未提供股票市值與借款算維持率），先提出一個精準追問，絕對不可以自行捏造範例數字。
+3. 【來源標示分級】：
+   - 知識庫已包含 Ivan 節目主張：精確標示「📌 Podcast EPxx (description_only)」及勘誤資訊。
+   - 知識庫未涵蓋但屬一般理財常識：使用 getGeneralFinanceExplanation 並標示「💡 一般金融知識（非 Ivan 原話）」。
+   - 即時法規、銀行授信或商品條款：說明需要查證最新官方發布。
+4. 【不給指令】：不提供保證獲利、保證安全或直接買賣個股指令。超出理財範圍時禮貌拒答。`;
 
 function makeHttpsRequest(url, data) {
   return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ function makeHttpsRequest(url, data) {
             reject(new Error(`JSON Parse Error: ${e.message}`));
           }
         } else {
-          reject(new Error(`API HTTP Error ${res.statusCode}: ${body}`));
+          reject(new Error(`Gemini API Error ${res.statusCode}: ${body}`));
         }
       });
     });
@@ -101,15 +101,13 @@ function makeHttpsRequest(url, data) {
 }
 
 /**
- * Call Gemini API with Tool Call Loop
+ * Call Server-Side Gemini REST API with Function Calling Loop & Session State
  */
-export async function callGeminiApi(userQuery, history = [], apiKey) {
+export async function callGeminiApiServerSide(userQuery, history = [], sessionState = {}, apiKey = '') {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-  // Format Contents Array
   const contents = [];
 
-  // Add conversation history
   history.forEach(item => {
     contents.push({
       role: item.role === 'user' ? 'user' : 'model',
@@ -117,30 +115,23 @@ export async function callGeminiApi(userQuery, history = [], apiKey) {
     });
   });
 
-  // Add current user prompt
   contents.push({
     role: 'user',
     parts: [{ text: userQuery }]
   });
 
   const payload = {
-    system_instruction: {
-      parts: [{ text: SYSTEM_INSTRUCTION }]
-    },
+    system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
     contents,
     tools: GEMINI_TOOLS_DECLARATION,
-    generationConfig: {
-      temperature: 0.2,
-      maxOutputTokens: 1000
-    }
+    generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
   };
 
-  // Turn 1: Call Gemini
   let response = await makeHttpsRequest(endpoint, JSON.stringify(payload));
   let candidate = response.candidates?.[0];
   let modelPart = candidate?.content?.parts?.[0];
 
-  // If Gemini requests Function Call
+  // If Gemini requests a tool call
   if (modelPart?.functionCall) {
     const call = modelPart.functionCall;
     const toolName = call.name;
@@ -148,14 +139,13 @@ export async function callGeminiApi(userQuery, history = [], apiKey) {
 
     let toolResult;
     if (toolName === 'calculateFinancialMetrics') {
-      toolResult = calculateFinancialMetrics(args);
+      toolResult = calculateFinancialMetrics(args, sessionState);
     } else if (toolName === 'searchIvanKnowledge') {
       toolResult = searchIvanKnowledge(args.query);
     } else if (toolName === 'getGeneralFinanceExplanation') {
       toolResult = getGeneralFinanceExplanation(args.topic || userQuery);
     }
 
-    // Append Function Call and Function Response to contents
     contents.push(candidate.content);
     contents.push({
       role: 'user',
@@ -167,7 +157,6 @@ export async function callGeminiApi(userQuery, history = [], apiKey) {
       }]
     });
 
-    // Turn 2: Send Tool Response back to Gemini
     const secondPayload = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents,
@@ -180,9 +169,9 @@ export async function callGeminiApi(userQuery, history = [], apiKey) {
     modelPart = candidate?.content?.parts?.[0];
   }
 
-  const finalAnswer = modelPart?.text || '無法取得 AI 回應。';
   return {
-    answer: finalAnswer,
-    isRealGemini: true
+    mode: 'llm',
+    answer: modelPart?.text || '無法取得 AI 答案。',
+    sessionState
   };
 }

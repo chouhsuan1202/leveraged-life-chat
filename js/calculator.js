@@ -1,188 +1,150 @@
 /**
- * Pure Financial Leverage & Risk Calculator (Standard ES Module)
+ * Pure Parameterized Financial Leverage & Risk Calculator
+ * ZERO Hardcoded Numbers / Fallback Placeholders
  */
 
-export function parseInput(val) {
-  if (val === null || val === undefined || val === '') return 0;
+export function parseNumber(val) {
+  if (val === null || val === undefined || val === '') return null;
   const num = Number(val);
   if (isNaN(num) || !isFinite(num) || num < 0) {
-    throw new Error(`Invalid numeric input: ${val}`);
+    return null;
   }
   return num;
 }
 
 /**
  * 1. DBR 22 Limit Calculation
- * @param {number} monthlyIncome 
- * @param {number} unsecuredDebt 
+ * @param {Object} params { income, unsecuredDebt }
  */
-export function calculateDbrLimit(monthlyIncome, unsecuredDebt = 0) {
-  const inc = parseInput(monthlyIncome);
-  const debt = parseInput(unsecuredDebt);
-  
-  if (inc <= 0) {
-    throw new Error('Monthly income must be greater than 0');
+export function calculateDbrLimit(params = {}) {
+  const income = parseNumber(params.income);
+  const unsecuredDebt = parseNumber(params.unsecuredDebt) || 0;
+
+  if (income === null || income <= 0) {
+    return {
+      status: 'missing_param',
+      requiredParam: 'income',
+      message: '需要提供您的月收入數字（例如：月薪 8 萬）。'
+    };
   }
 
-  const maxLimit = inc * 22;
-  const remainingLimit = Math.max(0, maxLimit - debt);
-  
+  const maxLimit = income * 22;
+  const remainingLimit = Math.max(0, maxLimit - unsecuredDebt);
+  const debtRatio = unsecuredDebt > 0 ? Number(((unsecuredDebt / maxLimit) * 100).toFixed(1)) : 0;
+
   return {
+    status: 'success',
+    income,
+    unsecuredDebt,
     maxLimit,
-    unsecuredDebt: debt,
     remainingLimit,
-    utilizationPercent: Number(((debt / maxLimit) * 100).toFixed(1))
+    debtRatio
   };
 }
 
 /**
- * 2. Maintenance Ratio Calculation
- * @param {number} pledgedValue 
- * @param {number} collateralLoan 
+ * 2. Stock Pledge Maintenance Ratio Calculation
+ * @param {Object} params { pledgedValue, loanBalance, targetRate }
  */
-export function calculateMaintenanceRatio(pledgedValue, collateralLoan) {
-  const pledged = parseInput(pledgedValue);
-  const loan = parseInput(collateralLoan);
+export function calculateMaintenanceRatio(params = {}) {
+  const pledgedValue = parseNumber(params.pledgedValue);
+  const loanBalance = parseNumber(params.loanBalance);
+  const targetRate = parseNumber(params.targetRate) || 130;
 
-  if (loan === 0) {
+  if (pledgedValue === null && loanBalance === null) {
     return {
-      ratio: null,
-      status: 'NO_LOAN',
-      displayText: '∞ % (無質押借款)'
+      status: 'missing_param',
+      requiredParams: ['pledgedValue', 'loanBalance'],
+      message: '需要提供設質股票總市值與質押借款金額（例如：200 萬股票借 50 萬）。'
     };
   }
 
-  if (pledged === 0) {
+  if (loanBalance === null || loanBalance === 0) {
     return {
-      ratio: 0,
-      status: 'NO_COLLATERAL',
-      displayText: '0.0 % (無擔保品)'
+      status: 'no_loan',
+      pledgedValue,
+      loanBalance: 0,
+      maintenanceRatio: null,
+      staticDropToTarget: null,
+      message: '無質押借款，維持率為無限大。'
     };
   }
 
-  const ratio = Number(((pledged / loan) * 100).toFixed(1));
-  let status = 'SAFE';
-  if (ratio < 130) {
-    status = 'MARGIN_CALL';
-  } else if (ratio < 150) {
-    status = 'WARNING';
-  } else if (ratio < 200) {
-    status = 'ALERT';
+  if (pledgedValue === null || pledgedValue === 0) {
+    return {
+      status: 'no_collateral',
+      pledgedValue: 0,
+      loanBalance,
+      maintenanceRatio: 0,
+      staticDropToTarget: 0,
+      message: '有借款但未設定設質擔保品。'
+    };
+  }
+
+  const maintenanceRatio = Number(((pledgedValue / loanBalance) * 100).toFixed(1));
+  let staticDropToTarget = 0;
+  if (maintenanceRatio > targetRate) {
+    staticDropToTarget = Number(((1 - (targetRate / maintenanceRatio)) * 100).toFixed(1));
+  }
+
+  let riskTier = 'SAFE';
+  if (maintenanceRatio < targetRate) {
+    riskTier = 'MARGIN_CALL';
+  } else if (maintenanceRatio < 150) {
+    riskTier = 'WARNING';
+  } else if (maintenanceRatio < 200) {
+    riskTier = 'ALERT';
   }
 
   return {
-    ratio,
-    status,
-    displayText: `${ratio.toFixed(1)} %`
+    status: 'success',
+    pledgedValue,
+    loanBalance,
+    maintenanceRatio,
+    targetRate,
+    staticDropToTarget,
+    riskTier
   };
 }
 
 /**
- * 3. Static Price Drop to Threshold Calculation
- * @param {number} currentRatio 
- * @param {number} threshold 
+ * 3. Effective Leverage Exposure Calculation
+ * @param {Object} params { totalAssets, leveragedETFValue, prototypeValue }
  */
-export function calculateStaticDropToThreshold(currentRatio, threshold = 130) {
-  const cur = parseInput(currentRatio);
-  const thresh = parseInput(threshold);
+export function calculateEffectiveExposure(params = {}) {
+  const totalAssets = parseNumber(params.totalAssets);
+  const leveragedETFValue = parseNumber(params.leveragedETFValue) || 0;
+  let prototypeValue = parseNumber(params.prototypeValue);
 
-  if (cur <= 0 || cur < thresh) {
+  if (totalAssets === null || totalAssets <= 0) {
     return {
-      dropPercent: 0.0,
-      isTriggered: true
+      status: 'missing_param',
+      requiredParam: 'totalAssets',
+      message: '需要提供您的總股票資產金額（例如：100 萬資產）。'
     };
   }
 
-  // Formula: 1 - (threshold / currentRatio)
-  const drop = (1 - (thresh / cur)) * 100;
-  return {
-    dropPercent: Number(drop.toFixed(1)),
-    isTriggered: false
-  };
-}
+  if (prototypeValue === null) {
+    prototypeValue = Math.max(0, totalAssets - leveragedETFValue);
+  }
 
-/**
- * 4. Effective Leverage Exposure Calculation
- * @param {number} pledged1x 
- * @param {number} pledged2x 
- * @param {number} unpledged1x 
- * @param {number} unpledged2x 
- * @param {number} netWorth 
- */
-export function calculateEffectiveExposure(pledged1x = 0, pledged2x = 0, unpledged1x = 0, unpledged2x = 0, netWorth = 0) {
-  const p1 = parseInput(pledged1x);
-  const p2 = parseInput(pledged2x);
-  const u1 = parseInput(unpledged1x);
-  const u2 = parseInput(unpledged2x);
-  const nw = Number(netWorth);
+  const totalExposure = prototypeValue + (leveragedETFValue * 2);
+  const exposureRatio = Number((totalExposure / totalAssets).toFixed(2));
 
-  const total1x = p1 + u1;
-  const total2x = p2 + u2;
-  const totalStockVal = p1 + p2 + u1 + u2;
-  const totalExposure = total1x + (total2x * 2);
-
-  let exposureRatio = null;
-  let status = 'INVALID';
-
-  if (nw > 0) {
-    exposureRatio = Number((totalExposure / nw).toFixed(2));
-    if (exposureRatio < 1.20) {
-      status = 'UNDER_TARGET';
-    } else if (exposureRatio <= 1.50) {
-      status = 'TARGET_RANGE';
-    } else {
-      status = 'ABOVE_TARGET';
-    }
+  let riskTier = 'TARGET_RANGE';
+  if (exposureRatio < 1.2) {
+    riskTier = 'UNDER_TARGET';
+  } else if (exposureRatio > 1.5) {
+    riskTier = 'ABOVE_TARGET';
   }
 
   return {
-    total1x,
-    total2x,
-    totalStockVal,
+    status: 'success',
+    totalAssets,
+    leveragedETFValue,
+    prototypeValue,
     totalExposure,
-    netWorth: nw,
     exposureRatio,
-    status
-  };
-}
-
-/**
- * Complete Full Portfolio Leverage Calculation
- * @param {Object} inputs 
- */
-export function calculateLeverage(inputs) {
-  const pledged1x = parseInput(inputs.pledged1x);
-  const pledged2x = parseInput(inputs.pledged2x);
-  const unpledged1x = parseInput(inputs.unpledged1x);
-  const unpledged2x = parseInput(inputs.unpledged2x);
-  const collateralLoan = parseInput(inputs.collateralLoan);
-  const creditLoan = parseInput(inputs.creditLoan);
-  const cashReserve = parseInput(inputs.cashReserve);
-
-  const totalPledgedVal = pledged1x + pledged2x;
-  const totalStockVal = totalPledgedVal + unpledged1x + unpledged2x;
-  const totalExposure = (pledged1x + unpledged1x) + ((pledged2x + unpledged2x) * 2);
-  const totalLiabilities = collateralLoan + creditLoan;
-  const netWorth = totalStockVal + cashReserve - totalLiabilities;
-
-  // Exposure
-  const expRes = calculateEffectiveExposure(pledged1x, pledged2x, unpledged1x, unpledged2x, netWorth);
-  
-  // Margin
-  const marginRes = calculateMaintenanceRatio(totalPledgedVal, collateralLoan);
-  const dropRes = marginRes.ratio !== null ? calculateStaticDropToThreshold(marginRes.ratio, 130) : { dropPercent: null };
-
-  return {
-    isValid: true,
-    netWorth,
-    totalPledgedVal,
-    totalStockVal,
-    totalExposure,
-    totalLiabilities,
-    exposureRatio: expRes.exposureRatio,
-    exposureStatus: expRes.status,
-    marginRatio: marginRes.ratio,
-    marginStatus: marginRes.status,
-    maxDropPercent: dropRes.dropPercent
+    riskTier
   };
 }

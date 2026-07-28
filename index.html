@@ -695,7 +695,7 @@
         <div class="chat-card">
           <div class="chat-header">
             <span><i class="fa-solid fa-robot" style="color: var(--primary);"></i> 槓桿人生AI</span>
-            <span style="font-size: 0.78rem; color: var(--accent-green);"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> AI 引擎在線</span>
+            <span id="status-badge" style="font-size: 0.78rem; color: var(--accent-green);"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> 檢測模式中...</span>
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="message assistant">
@@ -1037,6 +1037,22 @@
       window.open('slides.html', '_blank');
     };
 
+    const currentSessionId = 'session-' + Math.random().toString(36).substring(2, 9);
+
+    async function checkServerStatus() {
+      try {
+        const response = await fetch('/api/status');
+        if (response.ok) {
+          const data = await response.json();
+          const badgeEl = document.getElementById('status-badge');
+          if (badgeEl) {
+            badgeEl.innerHTML = `<i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> ${data.modeText || '離線規則模式'}`;
+            badgeEl.style.color = data.mode === 'llm' ? 'var(--accent-green)' : '#eab308';
+          }
+        }
+      } catch (err) {}
+    }
+
     window.sendMessage = async function() {
       const inputEl = document.getElementById('user-input');
       const text = inputEl.value.trim();
@@ -1051,10 +1067,15 @@
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history: chatHistory })
+          body: JSON.stringify({ message: text, sessionId: currentSessionId, history: chatHistory })
         });
         if (response.ok) {
           res = await response.json();
+          const badgeEl = document.getElementById('status-badge');
+          if (badgeEl && res.modeText) {
+            badgeEl.innerHTML = `<i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> ${res.modeText}`;
+            badgeEl.style.color = res.mode === 'llm' ? 'var(--accent-green)' : '#eab308';
+          }
         } else {
           res = await processQueryWithContext(text, chatHistory);
         }
@@ -1324,6 +1345,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      checkServerStatus();
       loadPrivateAssetDetails();
       window.runLeverageCalc();
     });
