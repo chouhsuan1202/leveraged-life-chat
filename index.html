@@ -645,14 +645,11 @@
       font-weight: 700;
     }
 
-    .disclaimer-banner {
-      background: #fffbebf5;
-      border: 1px solid #fde68a;
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      color: #92400e;
-      line-height: 1.45;
+    .subtle-box {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 0.4rem;
     }
   </style>
 </head>
@@ -745,23 +742,30 @@
             <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">🔒 瀏覽器本機端</span>
           </div>
           <div class="form-group">
-            <label>已設質質押擔保品股票市值 (用於維持率計算)</label>
+            <label>已設質原型 1x 擔保品市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-pledged-stock" value="300000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-pledged-1x" value="300000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
-            <label>未設質原型 1x 股票市值 (0050 / SXR8 等)</label>
+            <label>已設質正二 2x 擔保品市值</label>
+            <div class="input-with-unit">
+              <input type="number" id="inp-pledged-2x" value="0" min="0" oninput="calculateLeverage()">
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>未設質原型 1x 股票市值</label>
             <div class="input-with-unit">
               <input type="number" id="inp-unpledged-1x" value="300000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
           <div class="form-group">
-            <label>正二 2x 槓桿股票市值 (00631L / LQQ 等)</label>
+            <label>未設質正二 2x 股票市值</label>
             <div class="input-with-unit">
-              <input type="number" id="inp-stock-2x" value="400000" min="0" oninput="calculateLeverage()">
+              <input type="number" id="inp-unpledged-2x" value="400000" min="0" oninput="calculateLeverage()">
               <span class="input-unit">元</span>
             </div>
           </div>
@@ -804,7 +808,7 @@
 
           <div class="metric-box">
             <div>
-              <div class="metric-label">總槓桿股票曝險倍率 (含正二 2x 疊加)</div>
+              <div class="metric-label">總槓桿股票曝險倍率 (含已設質與未設質 2x 正二疊加)</div>
               <div class="metric-value val-primary" id="res-exposure-ratio">2.33 x</div>
             </div>
             <span class="status-badge badge-warning" id="badge-exposure">高於目標 (>1.5x)</span>
@@ -812,7 +816,7 @@
 
           <div class="metric-box">
             <div>
-              <div class="metric-label">質押維持率 (僅以實際設質擔保品估算)</div>
+              <div class="metric-label">質押維持率 (僅以設質 1x+2x 擔保品市值估算)</div>
               <div class="metric-value val-gold" id="res-margin-ratio">100.0 %</div>
             </div>
             <span class="status-badge badge-danger" id="badge-margin">已低於追繳線 (130%)</span>
@@ -825,8 +829,8 @@
             </div>
             <i class="fa-solid fa-shield-halved fa-xl" style="color: rgba(37, 99, 235, 0.25);"></i>
           </div>
-          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">
-            * 維持率計算式：\`設質擔保品市值 ÷ 質押借款\`。跌幅計算式：\`1 - (130% ÷ 當前維持率)\`（低於 130% 時顯示 0.0%）。實際以券商契約為準。
+          <p class="subtle-box">
+            * 維持率公式：\`(設質1x + 設質2x) ÷ 質押借款\`。曝險公式：\`(1x總和 + 2x總和 × 2) ÷ 淨資產\`。靜態跌幅：\`1 - (130% ÷ 當前維持率)\`。實際以券商契約為準。
           </p>
         </div>
       </div>
@@ -840,7 +844,7 @@
           <span style="font-size:0.8rem; color:var(--accent-green); font-weight:600;"><i class="fa-solid fa-shield"></i> 儲存於本機瀏覽器 (localStorage)</span>
         </div>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
-          在下方編輯你的持股標的、是否已設質質押與信貸明細。按下「儲存資產資料」後，資料將儲存於你個人電腦瀏覽器 (localStorage)。提醒：本機資料仍可能受瀏覽器擴充功能或同源腳本讀取，如於共用電腦使用，離線前請點選「清空本機紀錄」。
+          在下方編輯你的持股標的、槓桿類型與是否設質。按下「儲存資產資料」後，資料將儲存於你個人電腦瀏覽器 (localStorage)。提醒：本機資料仍可能受瀏覽器擴充功能或同源腳本讀取，如於共用電腦使用，離線前請點選「清空本機紀錄」。
         </p>
 
         <!-- Holdings Table -->
@@ -862,7 +866,7 @@
               <td><input type="text" value="0050 元大台灣50" class="h-name"></td>
               <td>
                 <select class="h-type">
-                  <option value="1x">原型 1x</option>
+                  <option value="1x" selected>原型 1x</option>
                   <option value="2x">正二 2x</option>
                 </select>
               </td>
@@ -960,10 +964,10 @@
             </ul>
           </div>
           <div class="kb-card">
-            <h3><i class="fa-solid fa-building-columns"></i> 02. 質押與信貸實操 (EP13/EP18/EP22)</h3>
+            <h3><i class="fa-solid fa-building-columns"></i> 02. 質押與信貸實操 (EP13/EP14/EP15)</h3>
             <ul>
               <li><strong>質押維持率算式</strong>：以「實際設質擔保品 ÷ 借款」計算（EP13 勘誤提醒：500 萬設質借 100 萬維持率為 500%）。</li>
-              <li><strong>信貸與 DBR 22 規範</strong>：無擔保債務月還款納入銀行收支比評估，可能影響房貸。</li>
+              <li><strong>信貸與 DBR 22 規範</strong>：（EP14）無擔保債務月還款納入銀行收支比評估，可能影響房貸。</li>
               <li><strong>維持率建議區</strong>：保持在 200% 至 300%+，靜態耐受擔保品 50%+ 跌幅。</li>
             </ul>
           </div>
@@ -1003,7 +1007,7 @@
     }
 
     const localAnswers = {
-      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP18 / EP22 信貸實操與銀行評估\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
+      "房貸": `### 🏦 信貸與 DBR 22 規範對房貸之影響說明\n\n📌 **引用出處**：Podcast EP14 (信貸談判與 DBR 22 規範) / EP15 (房貸授信評估)\n\n1. **DBR 22 倍規範**：\n   - 金管會規定全體金融機構無擔保債務總餘額不宜超過月收入 22 倍。\n2. **收支比影響**：\n   - 信貸按月本息攤還之金額，會直接納入銀行「收支比 / 負債比」評估，**可能影響未來房貸可貸額度或利率**。\n3. **質押貸款屬性**：\n   - 股票質押屬有擔保借款，但不排除部分金融機構綜合審查個人總負債比。`,
       "維持率": `### 🛡️ 股票質押維持率與靜態跌幅計算\n\n📌 **引用出處**：Podcast EP13 (含 500% 官方勘誤) / 證交所業務借貸規定\n\n- **精準計算公式**：\`維持率 = (實際設質擔保品股票市值 / 質押借款金額) × 100%\`\n- **追繳門檻參考**：證券業務借貸法定線通常為 130%（實際依各券商契約為準）。\n- **安全建議區**：保持在 **200% 至 300%+**。\n\n**靜態跌幅估算**：當維持率保持在 300% 時，擔保品資產價格需靜態下跌約 **56.7%** (\`1 - 130/300\`) 才會觸及 130% 追繳門檻。若當前維持率已低於 130%，跌幅將顯示 0.0%（已觸及追繳）。`,
       "正二": `### 📊 槓桿 ETF (00631L / LQQ) 風險揭露與曝險\n\n📌 **引用出處**：Podcast EP31 / 證交所槓桿型 ETF 警示說明\n\n- **波動衰減風險**：證交所提醒槓桿 ETF 追蹤「單日」2 倍報酬，盤整市場存在**每日再平衡波動衰減 (Volatility Decay)** 與轉倉價差成本，不宜視為無風險長期持有工具。\n- **總曝險算式**：\`總股票曝險 = 1x 股票 + (2x 股票 × 2)\`，Ivan 個人建議總曝險倍率控在 **1.2x 至 1.5x 淨資產**。`,
       "加碼": `### 🚨 大盤回檔加碼風控前提\n\n📌 **引用出處**：Podcast EP35 / EP38 回檔加碼 SOP\n\n1. **檢查風險指標**：加碼前需先確認質押維持率高於 200% 且備用金充足。\n2. **分批布局**：大盤回檔 15% 至 20% 時動用預留額度分批建倉。\n3. **趨勢驗證**：觀察標的重回 60 日季線 (60MA)，確保大盤趨勢穩定。`
@@ -1060,10 +1064,18 @@
       }, 300);
     }
 
+    function sanitizeHtmlOutput(rawHtml) {
+      if (typeof rawHtml !== 'string') return '';
+      return rawHtml
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/\son\w+="[^"]*"/gi, '')
+        .replace(/\son\w+='[^']*'/gi, '');
+    }
+
     function renderMarkdownText(text) {
       if (window.marked && typeof window.marked.parse === 'function') {
         const rawHtml = window.marked.parse(text);
-        return rawHtml;
+        return sanitizeHtmlOutput(rawHtml);
       }
       return escapeHtml(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
     }
@@ -1085,17 +1097,23 @@
       chatMsgs.scrollTop = chatMsgs.scrollHeight;
     }
 
-    // Precise Calculator Edge Case Logic
+    // Precise Calculator Edge Case Logic with Pledging 1x & 2x Breakdown
     function calculateLeverage() {
-      const pledgedStock = Math.max(0, parseFloat(document.getElementById('inp-pledged-stock').value) || 0);
+      const pledged1x = Math.max(0, parseFloat(document.getElementById('inp-pledged-1x').value) || 0);
+      const pledged2x = Math.max(0, parseFloat(document.getElementById('inp-pledged-2x').value) || 0);
       const unpledged1x = Math.max(0, parseFloat(document.getElementById('inp-unpledged-1x').value) || 0);
-      const stock2x = Math.max(0, parseFloat(document.getElementById('inp-stock-2x').value) || 0);
+      const unpledged2x = Math.max(0, parseFloat(document.getElementById('inp-unpledged-2x').value) || 0);
+      
       const colLoan = Math.max(0, parseFloat(document.getElementById('inp-collateral-loan').value) || 0);
       const credLoan = Math.max(0, parseFloat(document.getElementById('inp-credit-loan').value) || 0);
       const cash = Math.max(0, parseFloat(document.getElementById('inp-cash-reserve').value) || 0);
 
-      const totalStockVal = pledgedStock + unpledged1x + stock2x;
-      const totalExposure = pledgedStock + unpledged1x + (stock2x * 2);
+      const totalPledgedStockVal = pledged1x + pledged2x;
+      const totalStockVal = totalPledgedStockVal + unpledged1x + unpledged2x;
+      
+      // Total Exposure calculation correctly accounts for both pledged & unpledged 2x ETFs
+      const totalExposure = (pledged1x + unpledged1x) + ((pledged2x + unpledged2x) * 2);
+      
       const totalLiabilities = colLoan + credLoan;
       const netWorth = totalStockVal + cash - totalLiabilities;
       
@@ -1134,13 +1152,13 @@
         marginBadge.className = 'status-badge badge-safe';
         marginBadge.innerText = '無質押借款';
         dropEl.innerText = 'N/A (無借款)';
-      } else if (pledgedStock === 0) {
+      } else if (totalPledgedStockVal === 0) {
         marginEl.innerText = '0.0 %';
         marginBadge.className = 'status-badge badge-danger';
         marginBadge.innerText = '有借款但未設定設質';
         dropEl.innerText = '0.0 % (無擔保品)';
       } else {
-        const marginRatioNum = (pledgedStock / colLoan) * 100;
+        const marginRatioNum = (totalPledgedStockVal / colLoan) * 100;
         marginEl.innerText = `${marginRatioNum.toFixed(1)} %`;
 
         if (marginRatioNum < 130) {
@@ -1199,9 +1217,10 @@
     function savePrivateAssetDetails() {
       const rows = document.querySelectorAll('#body-holdings tr');
       const holdings = [];
-      let totalPledgedStock = 0;
-      let totalUnpledged1x = 0;
-      let totalStock2x = 0;
+      let pledged1x = 0;
+      let pledged2x = 0;
+      let unpledged1x = 0;
+      let unpledged2x = 0;
       let totalLoan = 0;
 
       rows.forEach(tr => {
@@ -1214,11 +1233,11 @@
         if (name || val > 0) {
           holdings.push({ name, type, isPledged, val, loan, note });
           if (isPledged === 'yes') {
-            totalPledgedStock += val;
-          } else if (type === '2x') {
-            totalStock2x += val;
+            if (type === '2x') pledged2x += val;
+            else pledged1x += val;
           } else {
-            totalUnpledged1x += val;
+            if (type === '2x') unpledged2x += val;
+            else unpledged1x += val;
           }
           totalLoan += loan;
         }
@@ -1227,9 +1246,10 @@
       localStorage.setItem('private_assets_list', JSON.stringify(holdings));
       
       // Auto Sync to Calculator
-      document.getElementById('inp-pledged-stock').value = totalPledgedStock;
-      document.getElementById('inp-unpledged-1x').value = totalUnpledged1x;
-      document.getElementById('inp-stock-2x').value = totalStock2x;
+      document.getElementById('inp-pledged-1x').value = pledged1x;
+      document.getElementById('inp-pledged-2x').value = pledged2x;
+      document.getElementById('inp-unpledged-1x').value = unpledged1x;
+      document.getElementById('inp-unpledged-2x').value = unpledged2x;
       document.getElementById('inp-collateral-loan').value = totalLoan;
       calculateLeverage();
 
